@@ -4,7 +4,9 @@
 
 1. Открой существующий проект Supabase.
 2. Перейди в SQL Editor.
-3. Выполни SQL из файла `supabase/migrations/20260807120000_user_layer.sql`.
+3. Выполни SQL из файлов в `supabase/migrations` по порядку:
+   - `20260807120000_user_layer.sql`
+   - `20260807133000_allow_profile_self_insert.sql`
 4. Перейди в Authentication → Providers → Email и включи email/password авторизацию.
 5. В Authentication → URL Configuration добавь локальный адрес сайта в Site URL, например `http://localhost:3000`.
 6. В Redirect URLs добавь:
@@ -23,4 +25,3 @@
 - `article_progress`: отметка статьи как прочитанной или непрочитанной.
 
 MDX-файлы остаются главным источником текста статей.
-

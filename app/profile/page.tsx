@@ -1,18 +1,14 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
 import { ProfileDashboard } from "@/components/auth/profile-dashboard";
 import { getAllTopics, getPublishedArticles } from "@/lib/content/articles";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
-import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
   title: "Профиль",
   description: "Профиль EgeBase: сохранённые статьи и прогресс изучения."
 };
 
-export const dynamic = "force-dynamic";
-
-export default async function ProfilePage() {
+export default function ProfilePage() {
   if (!isSupabaseConfigured()) {
     return (
       <div className="container-shell py-16">
@@ -26,15 +22,6 @@ export default async function ProfilePage() {
         </section>
       </div>
     );
-  }
-
-  const supabase = await createClient();
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/login?next=/profile");
   }
 
   const topics = getAllTopics().filter((topic) => topic.status === "published" && topic.href);
@@ -51,7 +38,7 @@ export default async function ProfilePage() {
           Здесь собраны сохранённые статьи и темы, которые вы уже отметили как изученные.
         </p>
       </section>
-      <ProfileDashboard email={user.email} topics={topics} totalArticles={totalArticles} />
+      <ProfileDashboard topics={topics} totalArticles={totalArticles} />
     </div>
   );
 }

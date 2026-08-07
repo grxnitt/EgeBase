@@ -21,8 +21,8 @@ export function AuthNav() {
 
     const supabase = createClient();
 
-    supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user ? { email: data.user.email ?? undefined } : null);
+    supabase.auth.getSession().then(({ data }) => {
+      setUser(data.session?.user ? { email: data.session.user.email ?? undefined } : null);
     });
 
     const {
@@ -66,4 +66,3 @@ export function AuthNav() {
     </div>
   );
 }
-

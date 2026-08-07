@@ -2,30 +2,34 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ProfileNameForm } from "@/components/auth/profile-name-form";
 import { ButtonLink } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import type { TopicSearchItem } from "@/lib/content/types";
 
 type ProfileDashboardProps = {
-  email?: string;
   topics: TopicSearchItem[];
   totalArticles: number;
 };
 
 type ProfileState = {
+  userId: string;
+  email: string;
   displayName: string;
   favoriteSlugs: string[];
   readSlugs: string[];
 };
 
 const emptyProfileState: ProfileState = {
+  userId: "",
+  email: "",
   displayName: "",
   favoriteSlugs: [],
   readSlugs: []
 };
 
-const requestTimeoutMs = 8000;
+const requestTimeoutMs = 6000;
 
 function withTimeout<T>(promise: PromiseLike<T>, message: string) {
   return Promise.race<T>([
@@ -36,72 +40,115 @@ function withTimeout<T>(promise: PromiseLike<T>, message: string) {
   ]);
 }
 
-export function ProfileDashboard({ email, topics, totalArticles }: ProfileDashboardProps) {
-  const [isLoading, setIsLoading] = useState(true);
+export function ProfileDashboard({ topics, totalArticles }: ProfileDashboardProps) {
+  const router = useRouter();
+  const [isCheckingSession, setIsCheckingSession] = useState(true);
+  const [isLoadingData, setIsLoadingData] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [profileState, setProfileState] = useState<ProfileState>(emptyProfileState);
   const topicBySlug = useMemo(() => new Map(topics.map((topic) => [topic.slug, topic])), [topics]);
 
   useEffect(() => {
     let isMounted = true;
+    const supabase = createClient();
 
     async function loadProfile() {
-      setIsLoading(true);
-      setErrorMessage("");
-      const supabase = createClient();
-
       try {
         const {
-          data: { user },
-          error: userError
-        } = await withTimeout(supabase.auth.getUser(), "Проверка входа заняла слишком много времени.");
+          data: { session }
+        } = await withTimeout(supabase.auth.getSession(), "Не удалось быстро проверить вход.");
 
-        if (userError || !user) {
-          throw new Error("Не удалось получить сессию. Попробуйте выйти и войти заново.");
+        if (!session?.user) {
+          router.replace("/login?next=/profile");
+          return;
         }
 
-        const [profileResult, favoritesResult, progressResult] = await withTimeout(
-          Promise.all([
-            supabase.from("profiles").select("display_name").eq("id", user.id).maybeSingle(),
+        const userId = session.user.id;
+
+        if (!isMounted) {
+          return;
+        }
+
+        setProfileState((current) => ({
+          ...current,
+          userId,
+          email: session.user.email ?? ""
+        }));
+        setIsCheckingSession(false);
+        setIsLoadingData(true);
+
+        const [profileResult, favoritesResult, progressResult] = await Promise.allSettled([
+          withTimeout(
+            supabase.from("profiles").select("display_name").eq("id", userId).maybeSingle(),
+            "Профиль загружается слишком долго."
+          ),
+          withTimeout(
             supabase
               .from("favorites")
               .select("article_slug, created_at")
-              .eq("user_id", user.id)
+              .eq("user_id", userId)
               .order("created_at", { ascending: false }),
+            "Сохранённые статьи загружаются слишком долго."
+          ),
+          withTimeout(
             supabase
               .from("article_progress")
               .select("article_slug, status, updated_at")
-              .eq("user_id", user.id)
+              .eq("user_id", userId)
               .eq("status", "read")
-              .order("updated_at", { ascending: false })
-          ]),
-          "Загрузка профиля заняла слишком много времени."
-        );
-
-        if (profileResult.error || favoritesResult.error || progressResult.error) {
-          throw new Error("Не получилось загрузить данные профиля.");
-        }
+              .order("updated_at", { ascending: false }),
+            "Прогресс загружается слишком долго."
+          )
+        ]);
 
         if (!isMounted) {
           return;
         }
+
+        const profileData =
+          profileResult.status === "fulfilled" && !profileResult.value.error
+            ? profileResult.value.data
+            : null;
+        const favoritesData =
+          favoritesResult.status === "fulfilled" && !favoritesResult.value.error
+            ? favoritesResult.value.data ?? []
+            : [];
+        const progressData =
+          progressResult.status === "fulfilled" && !progressResult.value.error
+            ? progressResult.value.data ?? []
+            : [];
+
+        const hasDataError =
+          profileResult.status === "rejected" ||
+          favoritesResult.status === "rejected" ||
+          progressResult.status === "rejected" ||
+          (profileResult.status === "fulfilled" && Boolean(profileResult.value.error)) ||
+          (favoritesResult.status === "fulfilled" && Boolean(favoritesResult.value.error)) ||
+          (progressResult.status === "fulfilled" && Boolean(progressResult.value.error));
 
         setProfileState({
-          displayName: profileResult.data?.display_name ?? "",
-          favoriteSlugs: (favoritesResult.data ?? []).map((item) => item.article_slug),
-          readSlugs: (progressResult.data ?? []).map((item) => item.article_slug)
+          userId,
+          email: session.user.email ?? "",
+          displayName: profileData?.display_name ?? "",
+          favoriteSlugs: favoritesData.map((item) => item.article_slug),
+          readSlugs: progressData.map((item) => item.article_slug)
         });
-      } catch (error) {
+
+        if (hasDataError) {
+          setErrorMessage(
+            "Часть данных не загрузилась. Проверь, применены ли миграции Supabase, и обнови страницу."
+          );
+        }
+      } catch {
         if (!isMounted) {
           return;
         }
 
-        setErrorMessage(
-          error instanceof Error ? error.message : "Не получилось загрузить данные профиля."
-        );
+        setIsCheckingSession(false);
+        setErrorMessage("Не удалось загрузить кабинет. Попробуй обновить страницу или войти заново.");
       } finally {
         if (isMounted) {
-          setIsLoading(false);
+          setIsLoadingData(false);
         }
       }
     }
@@ -111,7 +158,7 @@ export function ProfileDashboard({ email, topics, totalArticles }: ProfileDashbo
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [router]);
 
   function handleDisplayNameSaved(displayName: string) {
     setProfileState((current) => ({ ...current, displayName }));
@@ -122,25 +169,36 @@ export function ProfileDashboard({ email, topics, totalArticles }: ProfileDashbo
     .filter(Boolean);
   const readArticles = profileState.readSlugs.map((slug) => topicBySlug.get(slug)).filter(Boolean);
   const progressPercent = totalArticles ? Math.round((readArticles.length / totalArticles) * 100) : 0;
+  const isLoading = isCheckingSession || isLoadingData;
 
   return (
     <section className="grid grid-cols-[360px_minmax(0,1fr)] gap-10 py-10">
       <aside className="border border-border bg-surface p-6">
         <p className="editorial-label">Аккаунт</p>
         <h2 className="mt-3 text-2xl font-semibold text-primaryDark">
-          {isLoading ? "Загружаем..." : profileState.displayName || "Без имени"}
+          {isCheckingSession
+            ? "Проверяем вход..."
+            : profileState.displayName || "Без имени"}
         </h2>
-        <p className="mt-2 text-sm leading-6 text-muted">{email}</p>
+        <p className="mt-2 text-sm leading-6 text-muted">
+          {profileState.email || "Почта загрузится после входа"}
+        </p>
         {errorMessage ? (
           <p className="mt-4 border border-accent/40 bg-background px-4 py-3 text-sm leading-6 text-accent">
             {errorMessage}
           </p>
         ) : null}
-        <ProfileNameForm
-          displayName={profileState.displayName}
-          key={profileState.displayName}
-          onSaved={handleDisplayNameSaved}
-        />
+        {profileState.userId ? (
+          <ProfileNameForm
+            initialDisplayName={profileState.displayName}
+            onSaved={handleDisplayNameSaved}
+            userId={profileState.userId}
+          />
+        ) : (
+          <p className="mt-5 border border-border bg-background px-4 py-3 text-sm leading-6 text-muted">
+            Кабинет откроется после проверки входа.
+          </p>
+        )}
       </aside>
 
       <div className="space-y-8">
@@ -220,3 +278,4 @@ function ProfileList({
     </section>
   );
 }
+
