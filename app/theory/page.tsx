@@ -50,7 +50,7 @@ export default function TheoryPage() {
           })}
           <div className="mt-10 grid grid-cols-2 gap-4">
             {upcomingSections.map((section) => (
-              <div className="border border-border bg-surface p-5 opacity-70" key={section.slug}>
+              <div className="rounded-smds border border-border bg-surface p-5 opacity-70" key={section.slug}>
                 <h3 className="font-semibold">{section.title}</h3>
                 <p className="mt-2 text-sm text-muted">Раздел будет добавлен позже.</p>
               </div>

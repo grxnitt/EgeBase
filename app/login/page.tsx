@@ -21,14 +21,14 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 
   return (
     <div className="container-shell py-16">
-      <section className="mx-auto max-w-xl border border-border bg-surface px-8 py-8">
+      <section className="mx-auto max-w-xl rounded-smds border border-border bg-surface px-8 py-8">
         <p className="editorial-label">Профиль</p>
         <h1 className="mt-3 font-serif text-4xl leading-tight text-primaryDark">Войти в EgeBase</h1>
         <p className="mt-4 text-base leading-7 text-muted">
           Сохраняйте статьи и отмечайте темы, которые уже разобрали.
         </p>
         {params.message ? (
-          <p className="mt-5 border border-border bg-subtle px-4 py-3 text-sm leading-6 text-muted">
+          <p className="mt-5 rounded-smds border border-border bg-subtle px-4 py-3 text-sm leading-6 text-muted">
             Ссылка устарела или не подошла. Попробуйте ещё раз.
           </p>
         ) : null}
@@ -48,4 +48,3 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
     </div>
   );
 }
-
