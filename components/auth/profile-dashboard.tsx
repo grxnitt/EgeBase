@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ProfileNameForm } from "@/components/auth/profile-name-form";
 import { ButtonLink } from "@/components/ui/button";
+import { logoutAction } from "@/lib/auth/actions";
 import { createClient } from "@/lib/supabase/client";
 import type { TopicSearchItem } from "@/lib/content/types";
 
@@ -71,6 +72,7 @@ function reportProfileSyncIssue(context: string, error: unknown) {
 
 export function ProfileDashboard({ topics, totalArticles }: ProfileDashboardProps) {
   const router = useRouter();
+  const [isLogoutPending, startLogoutTransition] = useTransition();
   const [isCheckingSession, setIsCheckingSession] = useState(true);
   const [isSyncingProgress, setIsSyncingProgress] = useState(false);
   const [progressMessage, setProgressMessage] = useState("");
@@ -219,10 +221,22 @@ export function ProfileDashboard({ topics, totalArticles }: ProfileDashboardProp
           </p>
         ) : null}
         {!isCheckingSession ? (
-          <ProfileNameForm
-            initialDisplayName={profileState.displayName}
-            onSaved={handleDisplayNameSaved}
-          />
+          <>
+            <ProfileNameForm
+              initialDisplayName={profileState.displayName}
+              onSaved={handleDisplayNameSaved}
+            />
+            <div className="mt-6 border-t border-border pt-5">
+              <button
+                className="text-sm font-semibold text-primary underline decoration-border underline-offset-4 transition-colors hover:text-accent hover:decoration-accent disabled:opacity-60"
+                disabled={isLogoutPending}
+                onClick={() => startLogoutTransition(() => void logoutAction())}
+                type="button"
+              >
+                {isLogoutPending ? "Выходим..." : "Выйти из аккаунта"}
+              </button>
+            </div>
+          </>
         ) : (
           <p className="mt-5 border border-border bg-background px-4 py-3 text-sm leading-6 text-muted">
             Кабинет откроется после проверки входа.
