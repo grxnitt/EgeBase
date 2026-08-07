@@ -4,30 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getAllTopics } from "@/lib/content/articles";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
-
-export type ArticleUserState =
-  | {
-      isAuthenticated: false;
-      isFavorite: false;
-      isRead: false;
-      message?: string;
-    }
-  | {
-      isAuthenticated: true;
-      isFavorite: boolean;
-      isRead: boolean;
-      message?: string;
-    };
-
-export type ProfileFormState = {
-  status: "idle" | "error" | "success";
-  message: string;
-};
-
-export const initialProfileFormState: ProfileFormState = {
-  status: "idle",
-  message: ""
-};
+import type { ArticleUserState, ProfileFormState } from "@/lib/user-state/types";
 
 function getPublishedTopic(articleSlug: string) {
   return getAllTopics().find((topic) => topic.status === "published" && topic.slug === articleSlug);
@@ -193,4 +170,3 @@ export async function updateProfileAction(
 
   return { status: "success", message: "Профиль обновлён." };
 }
-

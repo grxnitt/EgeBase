@@ -2,18 +2,9 @@
 
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import type { FormState } from "@/lib/auth/types";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
-
-export type FormState = {
-  status: "idle" | "error" | "success";
-  message: string;
-};
-
-export const initialFormState: FormState = {
-  status: "idle",
-  message: ""
-};
 
 function normalizeEmail(value: FormDataEntryValue | null) {
   return typeof value === "string" ? value.trim().toLowerCase() : "";
@@ -193,4 +184,3 @@ export async function logoutAction() {
 
   redirect("/login");
 }
-
