@@ -14,7 +14,6 @@ type ProfileDashboardProps = {
 };
 
 type ProfileState = {
-  userId: string;
   email: string;
   displayName: string;
   favoriteSlugs: string[];
@@ -22,14 +21,13 @@ type ProfileState = {
 };
 
 const emptyProfileState: ProfileState = {
-  userId: "",
   email: "",
   displayName: "",
   favoriteSlugs: [],
   readSlugs: []
 };
 
-const requestTimeoutMs = 6000;
+const requestTimeoutMs = 15000;
 
 function withTimeout<T>(promise: PromiseLike<T>, message: string) {
   return Promise.race<T>([
@@ -40,11 +38,17 @@ function withTimeout<T>(promise: PromiseLike<T>, message: string) {
   ]);
 }
 
+function getDisplayName(userMetadata: Record<string, unknown> | undefined) {
+  const displayName = userMetadata?.display_name;
+
+  return typeof displayName === "string" ? displayName : "";
+}
+
 export function ProfileDashboard({ topics, totalArticles }: ProfileDashboardProps) {
   const router = useRouter();
   const [isCheckingSession, setIsCheckingSession] = useState(true);
-  const [isLoadingData, setIsLoadingData] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [isLoadingProgress, setIsLoadingProgress] = useState(false);
+  const [progressMessage, setProgressMessage] = useState("");
   const [profileState, setProfileState] = useState<ProfileState>(emptyProfileState);
   const topicBySlug = useMemo(() => new Map(topics.map((topic) => [topic.slug, topic])), [topics]);
 
@@ -63,38 +67,32 @@ export function ProfileDashboard({ topics, totalArticles }: ProfileDashboardProp
           return;
         }
 
-        const userId = session.user.id;
-
         if (!isMounted) {
           return;
         }
 
         setProfileState((current) => ({
           ...current,
-          userId,
-          email: session.user.email ?? ""
+          email: session.user.email ?? "",
+          displayName: getDisplayName(session.user.user_metadata)
         }));
         setIsCheckingSession(false);
-        setIsLoadingData(true);
+        setIsLoadingProgress(true);
 
-        const [profileResult, favoritesResult, progressResult] = await Promise.allSettled([
-          withTimeout(
-            supabase.from("profiles").select("display_name").eq("id", userId).maybeSingle(),
-            "Профиль загружается слишком долго."
-          ),
+        const [favoritesResult, progressResult] = await Promise.allSettled([
           withTimeout(
             supabase
               .from("favorites")
-              .select("article_slug, created_at")
-              .eq("user_id", userId)
+              .select("article_slug")
+              .eq("user_id", session.user.id)
               .order("created_at", { ascending: false }),
             "Сохранённые статьи загружаются слишком долго."
           ),
           withTimeout(
             supabase
               .from("article_progress")
-              .select("article_slug, status, updated_at")
-              .eq("user_id", userId)
+              .select("article_slug")
+              .eq("user_id", session.user.id)
               .eq("status", "read")
               .order("updated_at", { ascending: false }),
             "Прогресс загружается слишком долго."
@@ -105,10 +103,6 @@ export function ProfileDashboard({ topics, totalArticles }: ProfileDashboardProp
           return;
         }
 
-        const profileData =
-          profileResult.status === "fulfilled" && !profileResult.value.error
-            ? profileResult.value.data
-            : null;
         const favoritesData =
           favoritesResult.status === "fulfilled" && !favoritesResult.value.error
             ? favoritesResult.value.data ?? []
@@ -117,38 +111,33 @@ export function ProfileDashboard({ topics, totalArticles }: ProfileDashboardProp
           progressResult.status === "fulfilled" && !progressResult.value.error
             ? progressResult.value.data ?? []
             : [];
-
-        const hasDataError =
-          profileResult.status === "rejected" ||
+        const hasProgressError =
           favoritesResult.status === "rejected" ||
           progressResult.status === "rejected" ||
-          (profileResult.status === "fulfilled" && Boolean(profileResult.value.error)) ||
           (favoritesResult.status === "fulfilled" && Boolean(favoritesResult.value.error)) ||
           (progressResult.status === "fulfilled" && Boolean(progressResult.value.error));
 
-        setProfileState({
-          userId,
-          email: session.user.email ?? "",
-          displayName: profileData?.display_name ?? "",
+        setProfileState((current) => ({
+          ...current,
           favoriteSlugs: favoritesData.map((item) => item.article_slug),
           readSlugs: progressData.map((item) => item.article_slug)
-        });
+        }));
 
-        if (hasDataError) {
-          setErrorMessage(
-            "Часть данных не загрузилась. Проверь, применены ли миграции Supabase, и обнови страницу."
-          );
-        }
+        setProgressMessage(
+          hasProgressError
+            ? "Прогресс пока не загрузился. Скорее всего, нужно применить SQL-миграции Supabase для favorites и article_progress."
+            : ""
+        );
       } catch {
         if (!isMounted) {
           return;
         }
 
         setIsCheckingSession(false);
-        setErrorMessage("Не удалось загрузить кабинет. Попробуй обновить страницу или войти заново.");
+        setProgressMessage("Не удалось проверить вход. Попробуй обновить страницу или войти заново.");
       } finally {
         if (isMounted) {
-          setIsLoadingData(false);
+          setIsLoadingProgress(false);
         }
       }
     }
@@ -169,30 +158,26 @@ export function ProfileDashboard({ topics, totalArticles }: ProfileDashboardProp
     .filter(Boolean);
   const readArticles = profileState.readSlugs.map((slug) => topicBySlug.get(slug)).filter(Boolean);
   const progressPercent = totalArticles ? Math.round((readArticles.length / totalArticles) * 100) : 0;
-  const isLoading = isCheckingSession || isLoadingData;
 
   return (
     <section className="grid grid-cols-[360px_minmax(0,1fr)] gap-10 py-10">
       <aside className="border border-border bg-surface p-6">
         <p className="editorial-label">Аккаунт</p>
         <h2 className="mt-3 text-2xl font-semibold text-primaryDark">
-          {isCheckingSession
-            ? "Проверяем вход..."
-            : profileState.displayName || "Без имени"}
+          {isCheckingSession ? "Проверяем вход..." : profileState.displayName || "Без имени"}
         </h2>
         <p className="mt-2 text-sm leading-6 text-muted">
           {profileState.email || "Почта загрузится после входа"}
         </p>
-        {errorMessage ? (
+        {progressMessage ? (
           <p className="mt-4 border border-accent/40 bg-background px-4 py-3 text-sm leading-6 text-accent">
-            {errorMessage}
+            {progressMessage}
           </p>
         ) : null}
-        {profileState.userId ? (
+        {!isCheckingSession ? (
           <ProfileNameForm
             initialDisplayName={profileState.displayName}
             onSaved={handleDisplayNameSaved}
-            userId={profileState.userId}
           />
         ) : (
           <p className="mt-5 border border-border bg-background px-4 py-3 text-sm leading-6 text-muted">
@@ -203,20 +188,20 @@ export function ProfileDashboard({ topics, totalArticles }: ProfileDashboardProp
 
       <div className="space-y-8">
         <div className="grid grid-cols-3 gap-5">
-          <StatCard label="Прочитано" value={isLoading ? "..." : String(readArticles.length)} />
+          <StatCard label="Прочитано" value={isLoadingProgress ? "..." : String(readArticles.length)} />
           <StatCard label="Всего статей" value={String(totalArticles)} />
-          <StatCard label="Прогресс" value={isLoading ? "..." : `${progressPercent}%`} />
+          <StatCard label="Прогресс" value={isLoadingProgress ? "..." : `${progressPercent}%`} />
         </div>
 
         <ProfileList
           emptyText="Пока нет сохранённых статей."
-          isLoading={isLoading}
+          isLoading={isLoadingProgress}
           items={favoriteArticles}
           title="Сохранённые статьи"
         />
         <ProfileList
           emptyText="Пока нет изученных статей."
-          isLoading={isLoading}
+          isLoading={isLoadingProgress}
           items={readArticles}
           title="Изученные статьи"
         />

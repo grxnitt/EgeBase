@@ -5,11 +5,10 @@ import { createClient } from "@/lib/supabase/client";
 
 type ProfileNameFormProps = {
   initialDisplayName: string;
-  userId: string;
   onSaved?: (displayName: string) => void;
 };
 
-const requestTimeoutMs = 6000;
+const requestTimeoutMs = 15000;
 
 function withTimeout<T>(promise: PromiseLike<T>, message: string) {
   return Promise.race<T>([
@@ -20,11 +19,7 @@ function withTimeout<T>(promise: PromiseLike<T>, message: string) {
   ]);
 }
 
-export function ProfileNameForm({
-  initialDisplayName,
-  userId,
-  onSaved
-}: ProfileNameFormProps) {
+export function ProfileNameForm({ initialDisplayName, onSaved }: ProfileNameFormProps) {
   const [value, setValue] = useState(initialDisplayName);
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState("");
@@ -47,24 +42,19 @@ export function ProfileNameForm({
     try {
       const supabase = createClient();
       const { data, error } = await withTimeout(
-        supabase
-          .from("profiles")
-          .upsert(
-            { id: userId, display_name: nextDisplayName || null },
-            { onConflict: "id" }
-          )
-          .select("display_name")
-          .maybeSingle(),
-        "Сохранение заняло слишком много времени."
+        supabase.auth.updateUser({ data: { display_name: nextDisplayName || null } }),
+        "Сохранение заняло слишком много времени. Проверь соединение с Supabase."
       );
 
       if (error) {
-        throw new Error(
-          "Не получилось сохранить имя. Проверь, применена ли миграция Supabase для profiles."
-        );
+        throw new Error("Не получилось сохранить имя. Попробуй выйти и войти заново.");
       }
 
-      const savedName = data?.display_name ?? "";
+      const savedName =
+        typeof data.user?.user_metadata?.display_name === "string"
+          ? data.user.user_metadata.display_name
+          : nextDisplayName;
+
       setValue(savedName);
       onSaved?.(savedName);
       setMessageTone("muted");
