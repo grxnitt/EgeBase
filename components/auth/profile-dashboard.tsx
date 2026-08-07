@@ -59,6 +59,12 @@ function mergeSlugs(primary: string[], fallback: string[]) {
   return [...new Set([...primary, ...fallback])];
 }
 
+function reportProfileSyncIssue(context: string, error: unknown) {
+  if (process.env.NODE_ENV !== "production") {
+    console.warn(`[EgeBase] Supabase profile sync failed: ${context}`, error);
+  }
+}
+
 export function ProfileDashboard({ topics, totalArticles }: ProfileDashboardProps) {
   const router = useRouter();
   const [isCheckingSession, setIsCheckingSession] = useState(true);
@@ -134,6 +140,18 @@ export function ProfileDashboard({ topics, totalArticles }: ProfileDashboardProp
           (favoritesResult.status === "fulfilled" && Boolean(favoritesResult.value.error)) ||
           (progressResult.status === "fulfilled" && Boolean(progressResult.value.error));
 
+        if (favoritesResult.status === "rejected") {
+          reportProfileSyncIssue("load favorites", favoritesResult.reason);
+        } else if (favoritesResult.value.error) {
+          reportProfileSyncIssue("load favorites", favoritesResult.value.error);
+        }
+
+        if (progressResult.status === "rejected") {
+          reportProfileSyncIssue("load progress", progressResult.reason);
+        } else if (progressResult.value.error) {
+          reportProfileSyncIssue("load progress", progressResult.value.error);
+        }
+
         setProfileState((current) => ({
           ...current,
           favoriteSlugs: mergeSlugs(
@@ -148,14 +166,15 @@ export function ProfileDashboard({ topics, totalArticles }: ProfileDashboardProp
 
         setProgressMessage(
           hasProgressError
-            ? "Прогресс пока не загрузился. Скорее всего, нужно применить SQL-миграции Supabase для favorites и article_progress."
+            ? "Часть данных пока не синхронизировалась с аккаунтом. Локальный прогресс сохранён на этом устройстве."
             : ""
         );
-      } catch {
+      } catch (error) {
         if (!isMounted) {
           return;
         }
 
+        reportProfileSyncIssue("check session", error);
         setIsCheckingSession(false);
         setProgressMessage("Не удалось проверить вход. Попробуй обновить страницу или войти заново.");
       } finally {

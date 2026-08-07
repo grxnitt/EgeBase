@@ -67,6 +67,12 @@ function getStorageMessage() {
   return "Сохранили на этом устройстве. Синхронизация с аккаунтом пока недоступна.";
 }
 
+function reportSyncIssue(context: string, error: unknown) {
+  if (process.env.NODE_ENV !== "production") {
+    console.warn(`[EgeBase] Supabase article sync failed: ${context}`, error);
+  }
+}
+
 export function ArticleUserActions({ articleSlug, returnTo }: ArticleUserActionsProps) {
   const [state, setState] = useState<ArticleActionState>(initialState);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -133,12 +139,20 @@ export function ArticleUserActions({ articleSlug, returnTo }: ArticleUserActions
       if (favoriteResult.status === "fulfilled" && !favoriteResult.value.error) {
         isFavorite = Boolean(favoriteResult.value.data) || isFavorite;
       } else {
+        reportSyncIssue(
+          "load favorite",
+          favoriteResult.status === "fulfilled" ? favoriteResult.value.error : favoriteResult.reason
+        );
         message = getStorageMessage();
       }
 
       if (progressResult.status === "fulfilled" && !progressResult.value.error) {
         isRead = progressResult.value.data?.status === "read" || isRead;
       } else {
+        reportSyncIssue(
+          "load progress",
+          progressResult.status === "fulfilled" ? progressResult.value.error : progressResult.reason
+        );
         message = getStorageMessage();
       }
 
@@ -205,7 +219,8 @@ export function ArticleUserActions({ articleSlug, returnTo }: ArticleUserActions
         message: "",
         tone: "muted"
       }));
-    } catch {
+    } catch (error) {
+      reportSyncIssue("save favorite", error);
       setState((current) => ({
         ...current,
         isFavorite: nextFavorite,
@@ -252,7 +267,8 @@ export function ArticleUserActions({ articleSlug, returnTo }: ArticleUserActions
         message: "",
         tone: "muted"
       }));
-    } catch {
+    } catch (error) {
+      reportSyncIssue("save progress", error);
       setState((current) => ({
         ...current,
         isRead: nextRead,
