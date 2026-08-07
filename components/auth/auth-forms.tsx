@@ -5,11 +5,11 @@ import { useFormStatus } from "react-dom";
 import Link from "next/link";
 import {
   forgotPasswordAction,
-  initialFormState,
   loginAction,
   registerAction,
   resetPasswordAction
 } from "@/lib/auth/actions";
+import { initialFormState } from "@/lib/auth/types";
 import { cn } from "@/lib/utils";
 
 function SubmitButton({ children }: { children: React.ReactNode }) {
@@ -141,4 +141,3 @@ export function ResetPasswordForm() {
     </form>
   );
 }
-

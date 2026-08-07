@@ -6,9 +6,9 @@ import { useEffect, useState, useTransition } from "react";
 import {
   getArticleStateAction,
   setArticleReadAction,
-  setFavoriteAction,
-  type ArticleUserState
+  setFavoriteAction
 } from "@/lib/user-state/actions";
+import type { ArticleUserState } from "@/lib/user-state/types";
 import { cn } from "@/lib/utils";
 
 type ArticleUserActionsProps = {
@@ -130,4 +130,3 @@ export function ArticleUserActions({ articleSlug, returnTo }: ArticleUserActions
     </aside>
   );
 }
-

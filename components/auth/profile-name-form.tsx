@@ -2,7 +2,8 @@
 
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
-import { initialProfileFormState, updateProfileAction } from "@/lib/user-state/actions";
+import { updateProfileAction } from "@/lib/user-state/actions";
+import { initialProfileFormState } from "@/lib/user-state/types";
 
 function SaveButton() {
   const { pending } = useFormStatus();
@@ -40,4 +41,3 @@ export function ProfileNameForm({ displayName }: { displayName: string }) {
     </form>
   );
 }
-
