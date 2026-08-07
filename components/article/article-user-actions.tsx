@@ -2,7 +2,7 @@
 
 import { Bookmark, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 
@@ -71,6 +71,7 @@ export function ArticleUserActions({ articleSlug, returnTo }: ArticleUserActions
   const [state, setState] = useState<ArticleActionState>(initialState);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isPending, setIsPending] = useState(false);
+  const hasInteractedRef = useRef(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -97,6 +98,16 @@ export function ArticleUserActions({ articleSlug, returnTo }: ArticleUserActions
       let isFavorite = localFavorites.includes(articleSlug);
       let isRead = localRead.includes(articleSlug);
       let message = "";
+
+      setState({
+        isAuthenticated: true,
+        userId,
+        isFavorite,
+        isRead,
+        message: "",
+        tone: "muted"
+      });
+      setIsLoaded(true);
 
       const [favoriteResult, progressResult] = await Promise.allSettled([
         withTimeout(
@@ -135,6 +146,10 @@ export function ArticleUserActions({ articleSlug, returnTo }: ArticleUserActions
         return;
       }
 
+      if (hasInteractedRef.current) {
+        return;
+      }
+
       setState({
         isAuthenticated: true,
         userId,
@@ -159,6 +174,7 @@ export function ArticleUserActions({ articleSlug, returnTo }: ArticleUserActions
     }
 
     const nextFavorite = !state.isFavorite;
+    hasInteractedRef.current = true;
     setIsPending(true);
     setLocalList(state.userId, "favorites", articleSlug, nextFavorite);
 
@@ -207,6 +223,7 @@ export function ArticleUserActions({ articleSlug, returnTo }: ArticleUserActions
     }
 
     const nextRead = !state.isRead;
+    hasInteractedRef.current = true;
     setIsPending(true);
     setLocalList(state.userId, "read", articleSlug, nextRead);
 
@@ -313,4 +330,3 @@ export function ArticleUserActions({ articleSlug, returnTo }: ArticleUserActions
     </aside>
   );
 }
-
