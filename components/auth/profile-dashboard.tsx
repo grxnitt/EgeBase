@@ -44,6 +44,21 @@ function getDisplayName(userMetadata: Record<string, unknown> | undefined) {
   return typeof displayName === "string" ? displayName : "";
 }
 
+function getLocalList(userId: string, key: "favorites" | "read") {
+  try {
+    const raw = window.localStorage.getItem(`egebase:${userId}:${key}`);
+    const parsed = raw ? JSON.parse(raw) : [];
+
+    return Array.isArray(parsed) ? parsed.filter((item) => typeof item === "string") : [];
+  } catch {
+    return [];
+  }
+}
+
+function mergeSlugs(primary: string[], fallback: string[]) {
+  return [...new Set([...primary, ...fallback])];
+}
+
 export function ProfileDashboard({ topics, totalArticles }: ProfileDashboardProps) {
   const router = useRouter();
   const [isCheckingSession, setIsCheckingSession] = useState(true);
@@ -74,7 +89,9 @@ export function ProfileDashboard({ topics, totalArticles }: ProfileDashboardProp
         setProfileState((current) => ({
           ...current,
           email: session.user.email ?? "",
-          displayName: getDisplayName(session.user.user_metadata)
+          displayName: getDisplayName(session.user.user_metadata),
+          favoriteSlugs: getLocalList(session.user.id, "favorites"),
+          readSlugs: getLocalList(session.user.id, "read")
         }));
         setIsCheckingSession(false);
         setIsLoadingProgress(true);
@@ -119,8 +136,14 @@ export function ProfileDashboard({ topics, totalArticles }: ProfileDashboardProp
 
         setProfileState((current) => ({
           ...current,
-          favoriteSlugs: favoritesData.map((item) => item.article_slug),
-          readSlugs: progressData.map((item) => item.article_slug)
+          favoriteSlugs: mergeSlugs(
+            favoritesData.map((item) => item.article_slug),
+            getLocalList(session.user.id, "favorites")
+          ),
+          readSlugs: mergeSlugs(
+            progressData.map((item) => item.article_slug),
+            getLocalList(session.user.id, "read")
+          )
         }));
 
         setProgressMessage(
@@ -263,4 +286,3 @@ function ProfileList({
     </section>
   );
 }
-
