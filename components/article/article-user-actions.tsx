@@ -2,13 +2,8 @@
 
 import { Bookmark, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState, useTransition } from "react";
-import {
-  getArticleStateAction,
-  setArticleReadAction,
-  setFavoriteAction
-} from "@/lib/user-state/actions";
-import type { ArticleUserState } from "@/lib/user-state/types";
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 
 type ArticleUserActionsProps = {
@@ -16,56 +11,240 @@ type ArticleUserActionsProps = {
   returnTo: string;
 };
 
-const guestState: ArticleUserState = {
-  isAuthenticated: false,
-  isFavorite: false,
-  isRead: false
+type ArticleActionState = {
+  isAuthenticated: boolean;
+  userId: string;
+  isFavorite: boolean;
+  isRead: boolean;
+  message: string;
+  tone: "muted" | "error";
 };
 
+const initialState: ArticleActionState = {
+  isAuthenticated: false,
+  userId: "",
+  isFavorite: false,
+  isRead: false,
+  message: "",
+  tone: "muted"
+};
+
+const requestTimeoutMs = 12000;
+
+function withTimeout<T>(promise: PromiseLike<T>, message: string) {
+  return Promise.race<T>([
+    Promise.resolve(promise),
+    new Promise<T>((_, reject) => {
+      window.setTimeout(() => reject(new Error(message)), requestTimeoutMs);
+    })
+  ]);
+}
+
+function getLocalList(userId: string, key: "favorites" | "read") {
+  try {
+    const raw = window.localStorage.getItem(`egebase:${userId}:${key}`);
+    const parsed = raw ? JSON.parse(raw) : [];
+
+    return Array.isArray(parsed) ? parsed.filter((item) => typeof item === "string") : [];
+  } catch {
+    return [];
+  }
+}
+
+function setLocalList(userId: string, key: "favorites" | "read", articleSlug: string, value: boolean) {
+  const current = new Set(getLocalList(userId, key));
+
+  if (value) {
+    current.add(articleSlug);
+  } else {
+    current.delete(articleSlug);
+  }
+
+  window.localStorage.setItem(`egebase:${userId}:${key}`, JSON.stringify([...current]));
+}
+
+function getStorageMessage() {
+  return "Сохранил локально. Чтобы прогресс был в аккаунте, примени SQL-миграции Supabase.";
+}
+
 export function ArticleUserActions({ articleSlug, returnTo }: ArticleUserActionsProps) {
-  const [state, setState] = useState<ArticleUserState>(guestState);
+  const [state, setState] = useState<ArticleActionState>(initialState);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [isPending, startTransition] = useTransition();
+  const [isPending, setIsPending] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
 
-    getArticleStateAction(articleSlug).then((nextState) => {
-      if (isMounted) {
-        setState(nextState);
-        setIsLoaded(true);
+    async function loadState() {
+      const supabase = createClient();
+      const {
+        data: { session }
+      } = await supabase.auth.getSession();
+
+      if (!isMounted) {
+        return;
       }
-    });
+
+      if (!session?.user) {
+        setState(initialState);
+        setIsLoaded(true);
+        return;
+      }
+
+      const userId = session.user.id;
+      const localFavorites = getLocalList(userId, "favorites");
+      const localRead = getLocalList(userId, "read");
+      let isFavorite = localFavorites.includes(articleSlug);
+      let isRead = localRead.includes(articleSlug);
+      let message = "";
+
+      const [favoriteResult, progressResult] = await Promise.allSettled([
+        withTimeout(
+          supabase
+            .from("favorites")
+            .select("id")
+            .eq("user_id", userId)
+            .eq("article_slug", articleSlug)
+            .maybeSingle(),
+          "Избранное загружается слишком долго."
+        ),
+        withTimeout(
+          supabase
+            .from("article_progress")
+            .select("status")
+            .eq("user_id", userId)
+            .eq("article_slug", articleSlug)
+            .maybeSingle(),
+          "Прогресс загружается слишком долго."
+        )
+      ]);
+
+      if (favoriteResult.status === "fulfilled" && !favoriteResult.value.error) {
+        isFavorite = Boolean(favoriteResult.value.data) || isFavorite;
+      } else {
+        message = getStorageMessage();
+      }
+
+      if (progressResult.status === "fulfilled" && !progressResult.value.error) {
+        isRead = progressResult.value.data?.status === "read" || isRead;
+      } else {
+        message = getStorageMessage();
+      }
+
+      if (!isMounted) {
+        return;
+      }
+
+      setState({
+        isAuthenticated: true,
+        userId,
+        isFavorite,
+        isRead,
+        message,
+        tone: message ? "error" : "muted"
+      });
+      setIsLoaded(true);
+    }
+
+    loadState();
 
     return () => {
       isMounted = false;
     };
   }, [articleSlug]);
 
-  function updateFavorite() {
-    if (!state.isAuthenticated) {
+  async function updateFavorite() {
+    if (!state.isAuthenticated || !state.userId) {
       return;
     }
 
     const nextFavorite = !state.isFavorite;
-    setState({ ...state, isFavorite: nextFavorite });
+    setIsPending(true);
+    setLocalList(state.userId, "favorites", articleSlug, nextFavorite);
 
-    startTransition(async () => {
-      setState(await setFavoriteAction(articleSlug, nextFavorite));
-    });
+    try {
+      const supabase = createClient();
+      const request = nextFavorite
+        ? supabase
+            .from("favorites")
+            .upsert(
+              { user_id: state.userId, article_slug: articleSlug },
+              { onConflict: "user_id,article_slug" }
+            )
+        : supabase
+            .from("favorites")
+            .delete()
+            .eq("user_id", state.userId)
+            .eq("article_slug", articleSlug);
+
+      const { error } = await withTimeout(request, "Избранное сохраняется слишком долго.");
+
+      if (error) {
+        throw error;
+      }
+
+      setState((current) => ({
+        ...current,
+        isFavorite: nextFavorite,
+        message: "",
+        tone: "muted"
+      }));
+    } catch {
+      setState((current) => ({
+        ...current,
+        isFavorite: nextFavorite,
+        message: getStorageMessage(),
+        tone: "error"
+      }));
+    } finally {
+      setIsPending(false);
+    }
   }
 
-  function updateProgress() {
-    if (!state.isAuthenticated) {
+  async function updateProgress() {
+    if (!state.isAuthenticated || !state.userId) {
       return;
     }
 
     const nextRead = !state.isRead;
-    setState({ ...state, isRead: nextRead });
+    setIsPending(true);
+    setLocalList(state.userId, "read", articleSlug, nextRead);
 
-    startTransition(async () => {
-      setState(await setArticleReadAction(articleSlug, nextRead));
-    });
+    try {
+      const supabase = createClient();
+      const { error } = await withTimeout(
+        supabase.from("article_progress").upsert(
+          {
+            user_id: state.userId,
+            article_slug: articleSlug,
+            status: nextRead ? "read" : "unread",
+            read_at: nextRead ? new Date().toISOString() : null
+          },
+          { onConflict: "user_id,article_slug" }
+        ),
+        "Прогресс сохраняется слишком долго."
+      );
+
+      if (error) {
+        throw error;
+      }
+
+      setState((current) => ({
+        ...current,
+        isRead: nextRead,
+        message: "",
+        tone: "muted"
+      }));
+    } catch {
+      setState((current) => ({
+        ...current,
+        isRead: nextRead,
+        message: getStorageMessage(),
+        tone: "error"
+      }));
+    } finally {
+      setIsPending(false);
+    }
   }
 
   if (!isLoaded || !state.isAuthenticated) {
@@ -126,7 +305,12 @@ export function ArticleUserActions({ articleSlug, returnTo }: ArticleUserActions
         <CheckCircle2 aria-hidden="true" className="h-4 w-4" />
         {state.isRead ? "Изучено" : "Отметить изученной"}
       </button>
-      {state.message ? <p className="text-sm text-muted">{state.message}</p> : null}
+      {state.message ? (
+        <p className={cn("text-sm leading-6", state.tone === "error" ? "text-accent" : "text-muted")}>
+          {state.message}
+        </p>
+      ) : null}
     </aside>
   );
 }
+
