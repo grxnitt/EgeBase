@@ -10,7 +10,7 @@ function PlanDisclosure({ plan, index }: { plan: ExamPlanTask; index: number }) 
   const contentId = useId();
 
   return (
-    <div className="plan-disclosure border border-border bg-surface">
+    <div className="plan-disclosure rounded-smds border border-border bg-surface">
       <button
         aria-controls={contentId}
         aria-expanded={isOpen}

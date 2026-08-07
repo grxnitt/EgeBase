@@ -12,7 +12,7 @@ export default function ProfilePage() {
   if (!isSupabaseConfigured()) {
     return (
       <div className="container-shell py-16">
-        <section className="border border-border bg-surface px-8 py-8">
+        <section className="rounded-smds border border-border bg-surface px-8 py-8">
           <p className="editorial-label">Профиль</p>
           <h1 className="mt-3 font-serif text-4xl text-primaryDark">Supabase ещё не настроен</h1>
           <p className="mt-4 max-w-2xl text-base leading-7 text-muted">

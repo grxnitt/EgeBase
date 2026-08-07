@@ -76,7 +76,7 @@ function FormMessage({
   return (
     <p
       className={cn(
-        "border px-4 py-3 text-sm leading-6",
+        "rounded-smds border px-4 py-3 text-sm leading-6",
         status === "success"
           ? "border-border bg-subtle text-primaryDark"
           : "border-accent/45 bg-surface text-accent"
