@@ -3,7 +3,13 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
-const requestTimeoutMs = 8000;
+type ProfileNameFormProps = {
+  initialDisplayName: string;
+  userId: string;
+  onSaved?: (displayName: string) => void;
+};
+
+const requestTimeoutMs = 6000;
 
 function withTimeout<T>(promise: PromiseLike<T>, message: string) {
   return Promise.race<T>([
@@ -15,13 +21,11 @@ function withTimeout<T>(promise: PromiseLike<T>, message: string) {
 }
 
 export function ProfileNameForm({
-  displayName,
+  initialDisplayName,
+  userId,
   onSaved
-}: {
-  displayName: string;
-  onSaved?: (displayName: string) => void;
-}) {
-  const [value, setValue] = useState(displayName);
+}: ProfileNameFormProps) {
+  const [value, setValue] = useState(initialDisplayName);
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState("");
   const [messageTone, setMessageTone] = useState<"muted" | "error">("muted");
@@ -42,34 +46,25 @@ export function ProfileNameForm({
 
     try {
       const supabase = createClient();
-      const {
-        data: { user },
-        error: userError
-      } = await withTimeout(supabase.auth.getUser(), "Не удалось проверить вход.");
-
-      if (userError || !user) {
-        throw new Error("Войдите заново, чтобы изменить профиль.");
-      }
-
       const { data, error } = await withTimeout(
         supabase
           .from("profiles")
-          .update({ display_name: nextDisplayName || null })
-          .eq("id", user.id)
+          .upsert(
+            { id: userId, display_name: nextDisplayName || null },
+            { onConflict: "id" }
+          )
           .select("display_name")
           .maybeSingle(),
         "Сохранение заняло слишком много времени."
       );
 
       if (error) {
-        throw error;
+        throw new Error(
+          "Не получилось сохранить имя. Проверь, применена ли миграция Supabase для profiles."
+        );
       }
 
-      if (!data) {
-        throw new Error("Профиль не найден. Проверь, применена ли миграция Supabase.");
-      }
-
-      const savedName = data.display_name ?? "";
+      const savedName = data?.display_name ?? "";
       setValue(savedName);
       onSaved?.(savedName);
       setMessageTone("muted");
@@ -110,3 +105,4 @@ export function ProfileNameForm({
     </form>
   );
 }
+
