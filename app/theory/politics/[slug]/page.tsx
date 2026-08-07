@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { compileMDX } from "next-mdx-remote/rsc";
 import { notFound } from "next/navigation";
 import { ExamTasksBlock } from "@/components/article/blocks";
+import { ArticleUserActions } from "@/components/article/article-user-actions";
 import { createMdxComponents } from "@/components/article/mdx-components";
 import { PlanTaskDialog } from "@/components/article/plan-task-dialog";
 import { RelatedTasksPanel } from "@/components/article/related-tasks-panel";
@@ -124,6 +125,10 @@ export default async function ArticlePage({ params }: PageProps) {
             <h2 className="font-serif text-3xl">О чём эта тема?</h2>
             <p className="mt-4 text-lg leading-8 text-muted">{article.meta.description}</p>
           </section>
+          <ArticleUserActions
+            articleSlug={article.meta.slug}
+            returnTo={`${sectionHref}/${article.meta.slug}`}
+          />
           <div className="article-prose mt-10">{content}</div>
           <ExamTasksBlock tasks={article.meta.examTasks} />
           {article.meta.planTasks.length ? <PlanTaskDialog plans={article.meta.planTasks} /> : null}

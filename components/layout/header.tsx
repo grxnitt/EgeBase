@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
+import { AuthNav } from "@/components/auth/auth-nav";
 import { SearchInput } from "@/components/search/search-input";
 
 export function Header() {
   return (
     <header className="sticky top-0 z-30 border-b border-border/80 bg-surface/95 backdrop-blur-sm">
-      <div className="container-shell flex h-20 items-center justify-between gap-8">
+      <div className="container-shell flex h-20 items-center justify-between gap-6">
         <Link aria-label="EgeBase, на главную" className="group" href="/">
           <span className="block font-serif text-2xl font-bold leading-none">
             <span className="text-primaryDark">Ege</span>
@@ -25,6 +26,7 @@ export function Header() {
         <div className="w-64">
           <SearchInput compact />
         </div>
+        <AuthNav />
       </div>
     </header>
   );

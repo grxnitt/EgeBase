@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/navigation/breadcrumbs";
 import { Badge } from "@/components/ui/badge";
 import { TextLink } from "@/components/ui/button";
+import { ArticleUserActions } from "@/components/article/article-user-actions";
 import { ExamTasksBlock } from "@/components/article/blocks";
 import { createMdxComponents } from "@/components/article/mdx-components";
 import { PlanTaskDialog } from "@/components/article/plan-task-dialog";
@@ -124,6 +125,10 @@ export default async function ArticlePage({ params }: PageProps) {
             <h2 className="font-serif text-3xl">О чём эта тема?</h2>
             <p className="mt-4 text-lg leading-8 text-muted">{article.meta.description}</p>
           </section>
+          <ArticleUserActions
+            articleSlug={article.meta.slug}
+            returnTo={`${sectionHref}/${article.meta.slug}`}
+          />
           <div className="article-prose mt-10">{content}</div>
           <ExamTasksBlock tasks={article.meta.examTasks} />
           {article.meta.planTasks.length ? <PlanTaskDialog plans={article.meta.planTasks} /> : null}
