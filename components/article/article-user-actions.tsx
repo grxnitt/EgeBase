@@ -64,7 +64,7 @@ function setLocalList(userId: string, key: "favorites" | "read", articleSlug: st
 }
 
 function getStorageMessage() {
-  return "Сохранил локально. Чтобы прогресс был в аккаунте, примени SQL-миграции Supabase.";
+  return "Сохранили на этом устройстве. Синхронизация с аккаунтом пока недоступна.";
 }
 
 export function ArticleUserActions({ articleSlug, returnTo }: ArticleUserActionsProps) {
