@@ -317,6 +317,21 @@ h3.font-serif {
   transform: translateY(0);
 }
 
+.theory-topic-item {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 650ms var(--ease-soft),
+    transform 650ms var(--ease-soft);
+  transition-delay: var(--topic-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+.theory-topic-item.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .home-catalog-cta {
   opacity: 1;
   transform: translateY(8px) scale(1.045);
@@ -376,6 +391,12 @@ h3.font-serif {
   }
 
   .home-popular-item {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .theory-topic-item {
     opacity: 1;
     transform: none;
     transition: none;

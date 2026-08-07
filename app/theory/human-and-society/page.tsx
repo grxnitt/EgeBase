@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Breadcrumbs } from "@/components/navigation/breadcrumbs";
-import { ArticleCard } from "@/components/theory/article-card";
+import { ArticleList } from "@/components/theory/article-list";
 import { Badge } from "@/components/ui/badge";
 import { getAllTopics, getSectionArticles } from "@/lib/content/articles";
 import { humanAndSocietySection } from "@/config/theory";
@@ -35,11 +35,7 @@ export default function HumanAndSocietyPage() {
             <Badge>{topics.length - articles.length} тем скоро</Badge>
           </div>
         </div>
-        <div>
-          {topics.map((topic, index) => (
-            <ArticleCard index={index} key={topic.slug} topic={topic} />
-          ))}
-        </div>
+        <ArticleList topics={topics} />
       </section>
     </div>
   );
