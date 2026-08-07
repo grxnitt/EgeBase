@@ -62,7 +62,7 @@ function mergeSlugs(primary: string[], fallback: string[]) {
 export function ProfileDashboard({ topics, totalArticles }: ProfileDashboardProps) {
   const router = useRouter();
   const [isCheckingSession, setIsCheckingSession] = useState(true);
-  const [isLoadingProgress, setIsLoadingProgress] = useState(false);
+  const [isSyncingProgress, setIsSyncingProgress] = useState(false);
   const [progressMessage, setProgressMessage] = useState("");
   const [profileState, setProfileState] = useState<ProfileState>(emptyProfileState);
   const topicBySlug = useMemo(() => new Map(topics.map((topic) => [topic.slug, topic])), [topics]);
@@ -94,7 +94,7 @@ export function ProfileDashboard({ topics, totalArticles }: ProfileDashboardProp
           readSlugs: getLocalList(session.user.id, "read")
         }));
         setIsCheckingSession(false);
-        setIsLoadingProgress(true);
+        setIsSyncingProgress(true);
 
         const [favoritesResult, progressResult] = await Promise.allSettled([
           withTimeout(
@@ -160,7 +160,7 @@ export function ProfileDashboard({ topics, totalArticles }: ProfileDashboardProp
         setProgressMessage("Не удалось проверить вход. Попробуй обновить страницу или войти заново.");
       } finally {
         if (isMounted) {
-          setIsLoadingProgress(false);
+          setIsSyncingProgress(false);
         }
       }
     }
@@ -211,20 +211,26 @@ export function ProfileDashboard({ topics, totalArticles }: ProfileDashboardProp
 
       <div className="space-y-8">
         <div className="grid grid-cols-3 gap-5">
-          <StatCard label="Прочитано" value={isLoadingProgress ? "..." : String(readArticles.length)} />
+          <StatCard
+            label="Прочитано"
+            value={isCheckingSession ? "..." : String(readArticles.length)}
+          />
           <StatCard label="Всего статей" value={String(totalArticles)} />
-          <StatCard label="Прогресс" value={isLoadingProgress ? "..." : `${progressPercent}%`} />
+          <StatCard label="Прогресс" value={isCheckingSession ? "..." : `${progressPercent}%`} />
         </div>
+        {isSyncingProgress && !progressMessage ? (
+          <p className="text-sm leading-6 text-muted">Синхронизируем прогресс с аккаунтом...</p>
+        ) : null}
 
         <ProfileList
           emptyText="Пока нет сохранённых статей."
-          isLoading={isLoadingProgress}
+          isLoading={isCheckingSession}
           items={favoriteArticles}
           title="Сохранённые статьи"
         />
         <ProfileList
           emptyText="Пока нет изученных статей."
-          isLoading={isLoadingProgress}
+          isLoading={isCheckingSession}
           items={readArticles}
           title="Изученные статьи"
         />
