@@ -59,6 +59,10 @@ function mergeSlugs(primary: string[], fallback: string[]) {
   return [...new Set([...primary, ...fallback])];
 }
 
+function isTimeoutError(error: unknown) {
+  return error instanceof Error && error.message.includes("слишком долго");
+}
+
 function reportProfileSyncIssue(context: string, error: unknown) {
   if (process.env.NODE_ENV !== "production") {
     console.warn(`[EgeBase] Supabase profile sync failed: ${context}`, error);
@@ -134,22 +138,20 @@ export function ProfileDashboard({ topics, totalArticles }: ProfileDashboardProp
           progressResult.status === "fulfilled" && !progressResult.value.error
             ? progressResult.value.data ?? []
             : [];
-        const hasProgressError =
-          favoritesResult.status === "rejected" ||
-          progressResult.status === "rejected" ||
-          (favoritesResult.status === "fulfilled" && Boolean(favoritesResult.value.error)) ||
-          (progressResult.status === "fulfilled" && Boolean(progressResult.value.error));
+        const favoriteSyncError =
+          favoritesResult.status === "rejected" ? favoritesResult.reason : favoritesResult.value.error;
+        const progressSyncError =
+          progressResult.status === "rejected" ? progressResult.reason : progressResult.value.error;
+        const hasVisibleProgressError =
+          Boolean(favoriteSyncError && !isTimeoutError(favoriteSyncError)) ||
+          Boolean(progressSyncError && !isTimeoutError(progressSyncError));
 
-        if (favoritesResult.status === "rejected") {
-          reportProfileSyncIssue("load favorites", favoritesResult.reason);
-        } else if (favoritesResult.value.error) {
-          reportProfileSyncIssue("load favorites", favoritesResult.value.error);
+        if (favoriteSyncError) {
+          reportProfileSyncIssue("load favorites", favoriteSyncError);
         }
 
-        if (progressResult.status === "rejected") {
-          reportProfileSyncIssue("load progress", progressResult.reason);
-        } else if (progressResult.value.error) {
-          reportProfileSyncIssue("load progress", progressResult.value.error);
+        if (progressSyncError) {
+          reportProfileSyncIssue("load progress", progressSyncError);
         }
 
         setProfileState((current) => ({
@@ -165,7 +167,7 @@ export function ProfileDashboard({ topics, totalArticles }: ProfileDashboardProp
         }));
 
         setProgressMessage(
-          hasProgressError
+          hasVisibleProgressError
             ? "Часть данных пока не синхронизировалась с аккаунтом. Локальный прогресс сохранён на этом устройстве."
             : ""
         );

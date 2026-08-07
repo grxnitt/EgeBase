@@ -67,6 +67,10 @@ function getStorageMessage() {
   return "Сохранили на этом устройстве. Синхронизация с аккаунтом пока недоступна.";
 }
 
+function isTimeoutError(error: unknown) {
+  return error instanceof Error && error.message.includes("слишком долго");
+}
+
 function reportSyncIssue(context: string, error: unknown) {
   if (process.env.NODE_ENV !== "production") {
     console.warn(`[EgeBase] Supabase article sync failed: ${context}`, error);
@@ -139,21 +143,31 @@ export function ArticleUserActions({ articleSlug, returnTo }: ArticleUserActions
       if (favoriteResult.status === "fulfilled" && !favoriteResult.value.error) {
         isFavorite = Boolean(favoriteResult.value.data) || isFavorite;
       } else {
+        const error =
+          favoriteResult.status === "fulfilled" ? favoriteResult.value.error : favoriteResult.reason;
+
         reportSyncIssue(
           "load favorite",
-          favoriteResult.status === "fulfilled" ? favoriteResult.value.error : favoriteResult.reason
+          error
         );
-        message = getStorageMessage();
+        if (!isTimeoutError(error)) {
+          message = getStorageMessage();
+        }
       }
 
       if (progressResult.status === "fulfilled" && !progressResult.value.error) {
         isRead = progressResult.value.data?.status === "read" || isRead;
       } else {
+        const error =
+          progressResult.status === "fulfilled" ? progressResult.value.error : progressResult.reason;
+
         reportSyncIssue(
           "load progress",
-          progressResult.status === "fulfilled" ? progressResult.value.error : progressResult.reason
+          error
         );
-        message = getStorageMessage();
+        if (!isTimeoutError(error)) {
+          message = getStorageMessage();
+        }
       }
 
       if (!isMounted) {
@@ -224,8 +238,8 @@ export function ArticleUserActions({ articleSlug, returnTo }: ArticleUserActions
       setState((current) => ({
         ...current,
         isFavorite: nextFavorite,
-        message: getStorageMessage(),
-        tone: "error"
+        message: isTimeoutError(error) ? "" : getStorageMessage(),
+        tone: isTimeoutError(error) ? "muted" : "error"
       }));
     } finally {
       setIsPending(false);
@@ -272,8 +286,8 @@ export function ArticleUserActions({ articleSlug, returnTo }: ArticleUserActions
       setState((current) => ({
         ...current,
         isRead: nextRead,
-        message: getStorageMessage(),
-        tone: "error"
+        message: isTimeoutError(error) ? "" : getStorageMessage(),
+        tone: isTimeoutError(error) ? "muted" : "error"
       }));
     } finally {
       setIsPending(false);
