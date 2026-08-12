@@ -49,7 +49,7 @@ export default function HomePage() {
             </ButtonLink>
           </div>
         </div>
-        <div className="motion-hero-catalog border-t border-border pt-8 lg:border-l lg:border-t-0 lg:pl-10 lg:pt-0">
+        <div className="motion-hero-catalog hidden border-t border-border pt-8 lg:block lg:border-l lg:border-t-0 lg:pl-10 lg:pt-0">
           <p className="editorial-label">Каталог обществознания</p>
           <div className="mt-7 border-t border-accent/45">
             {theorySections.map((section) =>
