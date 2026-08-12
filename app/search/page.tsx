@@ -21,13 +21,13 @@ export default async function SearchPage({
   const results = searchTopics(query);
 
   return (
-    <div className="container-shell py-12">
+    <div className="container-shell py-8 md:py-12">
       <Breadcrumbs items={[{ label: "Главная", href: "/" }, { label: "Поиск" }]} />
-      <section className="grid grid-cols-[0.75fr_1.25fr] gap-16 py-16">
+      <section className="grid gap-10 py-10 lg:grid-cols-[0.75fr_1.25fr] lg:gap-16 lg:py-16">
         <div>
           <p className="editorial-label">Поиск</p>
-          <h1 className="mt-5 font-serif text-6xl leading-tight">Найти тему</h1>
-          <p className="mt-6 text-lg leading-8 text-muted">
+          <h1 className="mt-5 font-serif text-5xl leading-tight sm:text-6xl">Найти тему</h1>
+          <p className="mt-5 max-w-xl text-base leading-7 text-muted sm:mt-6 sm:text-lg sm:leading-8">
             Найдите тему по названию или фрагменту слова.
           </p>
         </div>
@@ -43,7 +43,7 @@ export default async function SearchPage({
                 results.map((topic) =>
                   topic.status === "published" ? (
                     <Link
-                      className="group flex items-center justify-between border-b border-border py-5 transition-colors hover:border-accent hover:text-accent"
+                      className="group flex flex-col gap-3 border-b border-border py-5 transition-colors hover:border-accent hover:text-accent sm:flex-row sm:items-center sm:justify-between"
                       href={topic.href ?? "/theory/sociology"}
                       key={topic.slug}
                     >
@@ -57,7 +57,7 @@ export default async function SearchPage({
                     </Link>
                   ) : (
                     <div
-                      className="flex items-center justify-between border-b border-border py-5 opacity-70"
+                      className="flex flex-col gap-3 border-b border-border py-5 opacity-70 sm:flex-row sm:items-center sm:justify-between"
                       key={topic.slug}
                     >
                       <span>
