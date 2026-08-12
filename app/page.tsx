@@ -64,7 +64,7 @@ export default function HomePage() {
                   </span>
                   <span className="text-lg font-semibold">{section.title}</span>
                   <Badge className="col-start-2 w-fit border-accent/45 bg-transparent text-accent sm:col-start-auto">
-                    Доступно
+                    Открыть
                   </Badge>
                 </Link>
               ) : (

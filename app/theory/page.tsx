@@ -39,7 +39,7 @@ export default function TheoryPage() {
               >
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
                   <div>
-                    <p className="editorial-label">Доступный раздел</p>
+                    <p className="editorial-label">Открыть раздел</p>
                     <h2 className="mt-3 font-serif text-3xl sm:text-4xl lg:text-5xl">{section.title}</h2>
                     <p className="mt-4 max-w-2xl text-muted">{section.description}</p>
                   </div>
