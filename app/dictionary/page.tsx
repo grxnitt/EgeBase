@@ -1,30 +1,58 @@
 import type { Metadata } from "next";
-import { BookOpenText } from "lucide-react";
 import { Breadcrumbs } from "@/components/navigation/breadcrumbs";
-import { ButtonLink } from "@/components/ui/button";
+import { getDictionaryTerms } from "@/lib/dictionary";
 
 export const metadata: Metadata = {
   title: "Словарь",
-  description: "Раздел словаря EgeBase. Ключевые понятия появятся позже.",
+  description: "Короткий словарь ключевых понятий EgeBase по обществознанию.",
   alternates: { canonical: "/dictionary" }
 };
 
 export default function DictionaryPage() {
+  const terms = getDictionaryTerms();
+  const groupedTerms = terms.reduce<Array<{ section: string; terms: typeof terms }>>((groups, term) => {
+    const existingGroup = groups.find((group) => group.section === term.section);
+    if (existingGroup) {
+      existingGroup.terms.push(term);
+    } else {
+      groups.push({ section: term.section, terms: [term] });
+    }
+
+    return groups;
+  }, []);
+
   return (
-    <div className="container-shell py-12">
+    <div className="container-shell py-8 md:py-12">
       <Breadcrumbs items={[{ label: "Главная", href: "/" }, { label: "Словарь" }]} />
-      <section className="grid min-h-[520px] place-items-center py-16">
-        <div className="max-w-2xl border-y border-border py-14 text-center">
-          <BookOpenText aria-hidden="true" className="mx-auto h-10 w-10 text-accent" />
-          <p className="editorial-label mt-8">Раздел в подготовке</p>
-          <h1 className="mt-4 font-serif text-6xl leading-tight">Словарь скоро появится</h1>
-          <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-muted">
-            Мы собираем короткие определения и ключевые понятия, чтобы к ним было удобно
-            возвращаться при повторении.
+      <section className="grid gap-10 py-10 lg:grid-cols-[0.75fr_1.25fr] lg:gap-16 lg:py-16">
+        <div>
+          <p className="editorial-label">Словарь</p>
+          <h1 className="mt-5 font-serif text-5xl leading-tight sm:text-6xl">Ключевые понятия</h1>
+          <p className="mt-5 max-w-xl text-base leading-7 text-muted sm:mt-6 sm:text-lg sm:leading-8">
+            Термины из статей теперь подсвечиваются и ведут сюда. Словарь будет постепенно
+            расширяться вместе с теорией.
           </p>
-          <ButtonLink className="mt-9" href="/theory">
-            Вернуться к теории
-          </ButtonLink>
+        </div>
+        <div className="space-y-10">
+          {groupedTerms.map(({ section, terms: sectionTerms }) => (
+            <section className="border-t border-border pt-6" key={section}>
+              <h2 className="font-serif text-3xl leading-tight">{section}</h2>
+              <div className="mt-5 grid gap-4">
+                {sectionTerms.map((term) => (
+                  <article
+                    className="scroll-mt-28 rounded-smds border border-border bg-surface p-5 transition-colors target:border-accent target:bg-subtle/55"
+                    id={term.slug}
+                    key={term.slug}
+                  >
+                    <h3 className="text-xl font-semibold text-primaryDark">{term.title}</h3>
+                    <p className="mt-3 text-sm leading-6 text-muted sm:text-base sm:leading-7">
+                      {term.definition}
+                    </p>
+                  </article>
+                ))}
+              </div>
+            </section>
+          ))}
         </div>
       </section>
     </div>
