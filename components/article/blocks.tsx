@@ -69,15 +69,15 @@ export function ArticleTable({
     <div className="my-8 space-y-3">
       {rows.map((row, rowIndex) => (
         <section
-          className="rounded-[14px] border border-border bg-surface px-4 py-4 sm:px-5"
+          className="rounded-[14px] border border-border bg-surface px-4 py-4 shadow-[0_10px_30px_rgba(68,45,35,0.035)] sm:px-5"
           key={`${rowIndex}-${row.join("-")}`}
         >
-          <div className="grid gap-0 sm:grid-cols-[0.95fr_1.35fr_1.35fr] sm:gap-5">
+          <div className="grid gap-0 overflow-hidden rounded-[12px] sm:grid-cols-[0.95fr_1.35fr_1.35fr]">
             {row.map((cell, cellIndex) => (
               <div
                 className={cn(
-                  "py-3 first:pt-0 last:pb-0 sm:py-0",
-                  cellIndex > 0 && "border-t border-border sm:border-t-0"
+                  "bg-white/35 px-3 py-3 first:pt-0 last:pb-0 sm:px-5 sm:py-1 sm:first:pt-1 sm:last:pb-1",
+                  cellIndex > 0 && "border-t border-border sm:border-l sm:border-t-0"
                 )}
                 key={`${cellIndex}-${cell}`}
               >
@@ -129,13 +129,13 @@ export function ArticleFactCard({
   ].filter((field) => field.label && field.value);
 
   return (
-    <section className="rounded-[14px] border border-border bg-surface px-4 py-4 sm:px-5">
-      <div className="grid gap-0 sm:grid-cols-3 sm:gap-5">
+    <section className="rounded-[14px] border border-border bg-surface px-4 py-4 shadow-[0_10px_30px_rgba(68,45,35,0.035)] sm:px-5">
+      <div className="grid gap-0 overflow-hidden rounded-[12px] sm:grid-cols-3">
         {fields.map((field, index) => (
           <div
             className={cn(
-              "py-3 first:pt-0 last:pb-0 sm:py-0",
-              index > 0 && "border-t border-border sm:border-t-0"
+              "bg-white/35 px-3 py-3 first:pt-0 last:pb-0 sm:px-5 sm:py-1 sm:first:pt-1 sm:last:pb-1",
+              index > 0 && "border-t border-border sm:border-l sm:border-t-0"
             )}
             key={`${field.label}-${field.value}`}
           >
