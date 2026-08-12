@@ -66,18 +66,18 @@ export function ArticleTable({
   rows?: string[][];
 }) {
   return (
-    <div className="my-8">
-      <div className="space-y-3 sm:hidden">
-        {rows.map((row, rowIndex) => (
-          <div
-            className="rounded-[14px] border border-border bg-surface px-4 py-4"
-            key={`${rowIndex}-${row.join("-")}`}
-          >
+    <div className="my-8 space-y-3">
+      {rows.map((row, rowIndex) => (
+        <section
+          className="rounded-[14px] border border-border bg-surface px-4 py-4 sm:px-5"
+          key={`${rowIndex}-${row.join("-")}`}
+        >
+          <div className="grid gap-0 sm:grid-cols-[0.95fr_1.35fr_1.35fr] sm:gap-5">
             {row.map((cell, cellIndex) => (
               <div
                 className={cn(
-                  "grid gap-1 py-3 first:pt-0 last:pb-0",
-                  cellIndex > 0 && "border-t border-border"
+                  "py-3 first:pt-0 last:pb-0 sm:py-0",
+                  cellIndex > 0 && "border-t border-border sm:border-t-0"
                 )}
                 key={`${cellIndex}-${cell}`}
               >
@@ -86,37 +86,12 @@ export function ArticleTable({
                     {columns[cellIndex]}
                   </p>
                 ) : null}
-                <p className="text-base leading-7 text-muted">{cell}</p>
+                <p className="mt-1 text-base leading-7 text-muted sm:text-sm sm:leading-6">{cell}</p>
               </div>
             ))}
           </div>
-        ))}
-      </div>
-
-      <div className="hidden overflow-hidden rounded-[14px] border border-border bg-surface sm:block">
-        <table className="w-full border-collapse text-left text-sm">
-          <thead className="bg-subtle text-primaryDark">
-            <tr>
-              {columns.map((column) => (
-                <th className="border-b border-border px-4 py-3 font-semibold" key={column}>
-                  {column}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row, rowIndex) => (
-              <tr className={cn(rowIndex % 2 === 1 && "bg-subtle/45")} key={row.join("-")}>
-                {row.map((cell) => (
-                  <td className="border-b border-border px-4 py-3 align-top text-muted" key={cell}>
-                    {cell}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+        </section>
+      ))}
     </div>
   );
 }
