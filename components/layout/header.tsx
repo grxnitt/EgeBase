@@ -5,7 +5,7 @@ import { SearchInput } from "@/components/search/search-input";
 
 export function Header() {
   return (
-    <header className="sticky top-0 z-30 border-b border-border/80 bg-surface/95 backdrop-blur-sm">
+    <header className="z-30 border-b border-border/80 bg-surface/95 backdrop-blur-sm md:sticky md:top-0">
       <div className="container-shell flex min-h-20 flex-col gap-4 py-4 lg:flex-row lg:items-center lg:justify-between lg:gap-6">
         <div className="flex items-center justify-between gap-4 lg:contents">
           <Link aria-label="EgeBase, на главную" className="group shrink-0" href="/">
