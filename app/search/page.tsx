@@ -18,10 +18,7 @@ function HighlightedText({ text, query }: { text: string; query: string }) {
     <>
       {splitHighlightedText(text, query).map((part, index) =>
         part.highlighted ? (
-          <mark
-            className="rounded-sm bg-accent/15 px-0.5 text-inherit ring-1 ring-accent/25"
-            key={`${part.text}-${index}`}
-          >
+          <mark className="search-highlight" key={`${part.text}-${index}`}>
             {part.text}
           </mark>
         ) : (
