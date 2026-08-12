@@ -59,7 +59,9 @@ export type TopicSearchItem = {
   title: string;
   slug: string;
   section: string;
+  sectionSlug?: string;
   status: TopicStatus;
   href?: string;
   order: number;
+  excerpt?: string;
 };

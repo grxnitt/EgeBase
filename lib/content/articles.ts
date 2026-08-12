@@ -16,6 +16,8 @@ import type {
 
 const contentRoot = path.join(process.cwd(), "content");
 
+type RankedTopicSearchItem = TopicSearchItem & { score: number };
+
 function getSectionDir(section: TheorySection) {
   return section.contentDir ? path.join(contentRoot, section.contentDir) : null;
 }
@@ -160,15 +162,18 @@ export function getAllTopics(): TopicSearchItem[] {
         title: article.meta.title,
         slug: article.meta.slug,
         section: article.meta.section,
+        sectionSlug: section.slug,
         status: article.meta.status,
         href: `${section.href}/${article.meta.slug}`,
-        order: article.meta.order
+        order: article.meta.order,
+        excerpt: article.meta.description
       }));
 
       const soon = (section.comingSoonTopics ?? []).map((topic) => ({
         title: topic.title,
         slug: topic.slug,
         section: section.title,
+        sectionSlug: section.slug,
         status: "coming-soon" as const,
         order: topic.order
       }));
@@ -178,11 +183,106 @@ export function getAllTopics(): TopicSearchItem[] {
     .sort((a, b) => a.section.localeCompare(b.section, "ru") || a.order - b.order);
 }
 
-export function searchTopics(query: string) {
-  const normalized = query.trim().toLowerCase();
+function normalizeSearchText(value: string) {
+  return value.toLocaleLowerCase("ru-RU").replaceAll("ё", "е").trim();
+}
+
+function stripMdxSyntax(value: string) {
+  return value
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/[#>*_\-|]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function createSearchExcerpt(source: string, query: string) {
+  const plainText = stripMdxSyntax(source);
+  const normalizedText = normalizeSearchText(plainText);
+  const normalizedQuery = normalizeSearchText(query);
+  const matchIndex = normalizedText.indexOf(normalizedQuery);
+
+  if (matchIndex === -1) {
+    return undefined;
+  }
+
+  const excerptRadius = 95;
+  const start = Math.max(0, matchIndex - excerptRadius);
+  const end = Math.min(plainText.length, matchIndex + normalizedQuery.length + excerptRadius);
+  const excerpt = plainText.slice(start, end).trim();
+
+  return `${start > 0 ? "…" : ""}${excerpt}${end < plainText.length ? "…" : ""}`;
+}
+
+export function searchTopics(query: string, sectionSlug?: string) {
+  const normalized = normalizeSearchText(query);
   if (!normalized) {
     return [];
   }
 
-  return getAllTopics().filter((topic) => topic.title.toLowerCase().includes(normalized));
+  const articles = getPublishedArticles(sectionSlug);
+  const articleResults = articles
+    .reduce<RankedTopicSearchItem[]>((results, article) => {
+      const section = theorySections.find((item) => item.title === article.meta.section);
+      const title = normalizeSearchText(article.meta.title);
+      const sectionTitle = normalizeSearchText(article.meta.section);
+      const description = normalizeSearchText(article.meta.description);
+      const body = normalizeSearchText(stripMdxSyntax(article.body));
+
+      let score: number | null = null;
+      if (title.includes(normalized)) {
+        score = 0;
+      } else if (sectionTitle.includes(normalized)) {
+        score = 1;
+      } else if (description.includes(normalized)) {
+        score = 2;
+      } else if (body.includes(normalized)) {
+        score = 3;
+      }
+
+      if (score === null) {
+        return results;
+      }
+
+      results.push({
+        title: article.meta.title,
+        slug: article.meta.slug,
+        section: article.meta.section,
+        sectionSlug: section?.slug,
+        status: article.meta.status,
+        href: `${section?.href ?? "/theory"}/${article.meta.slug}`,
+        order: article.meta.order,
+        excerpt:
+          score === 3
+            ? createSearchExcerpt(article.body, query)
+            : article.meta.description,
+        score
+      });
+
+      return results;
+    }, []);
+
+  const soonResults = getAllTopics()
+    .filter((topic) => topic.status === "coming-soon")
+    .filter((topic) => !sectionSlug || topic.sectionSlug === sectionSlug)
+    .filter(
+      (topic) =>
+        normalizeSearchText(topic.title).includes(normalized) ||
+        normalizeSearchText(topic.section).includes(normalized)
+    )
+    .map((topic): RankedTopicSearchItem => ({ ...topic, score: 4 }));
+
+  return [...articleResults, ...soonResults]
+    .sort(
+      (a, b) =>
+        a.score - b.score ||
+        a.section.localeCompare(b.section, "ru") ||
+        a.order - b.order
+    )
+    .map(({ score, ...topic }) => {
+      void score;
+      return topic;
+    });
 }
