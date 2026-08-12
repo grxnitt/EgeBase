@@ -36,21 +36,64 @@ export default async function DictionaryPage({
           </p>
         </div>
         <div>
-          <div className="flex flex-wrap gap-2">
+          <div className="rounded-smds border border-border bg-surface p-5 sm:p-6">
+            <div className="flex items-center justify-between gap-4 border-b border-border pb-4">
+              <div>
+                <p className="editorial-label">Разделы словаря</p>
+                <p className="mt-2 text-sm leading-6 text-muted sm:text-base">
+                  Выберите тему, чтобы открыть список терминов.
+                </p>
+              </div>
+              {selectedSection ? (
+                <span className="hidden rounded-full border border-accent/30 bg-subtle px-3 py-1 text-xs font-semibold text-accent sm:inline-flex">
+                  Выбран раздел
+                </span>
+              ) : null}
+            </div>
+
+            <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {groupedTerms.map(({ section, terms }) => (
               <Link
-                className={`rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${
+                className={`group rounded-smds border p-5 transition-colors ${
                   selectedSection === section
-                    ? "border-accent bg-accent text-surface"
-                    : "border-border bg-surface text-muted hover:border-accent hover:text-accent"
+                    ? "border-accent bg-primary text-surface shadow-editorial"
+                    : "border-border bg-background hover:border-accent hover:bg-subtle/55"
                 }`}
                 href={`/dictionary?section=${encodeURIComponent(section)}`}
                 key={section}
               >
-                {section}
-                <span className="ml-2 text-xs opacity-70">{terms.length}</span>
+                <span className="flex items-start justify-between gap-4">
+                  <span
+                    className={`block text-xl font-semibold leading-tight ${
+                      selectedSection === section
+                        ? "text-surface"
+                        : "text-primaryDark group-hover:text-accent"
+                    }`}
+                  >
+                    {section}
+                  </span>
+                  <span
+                    className={`inline-flex min-w-9 items-center justify-center rounded-full px-2.5 py-1 text-sm font-bold ${
+                      selectedSection === section
+                        ? "bg-surface/15 text-surface"
+                        : "bg-surface text-accent"
+                    }`}
+                  >
+                    {terms.length}
+                  </span>
+                </span>
+                <span
+                  className={`mt-5 inline-flex items-center gap-2 text-sm font-semibold ${
+                    selectedSection === section
+                      ? "text-surface/90"
+                      : "text-accent"
+                  }`}
+                >
+                  Выбрать раздел <span aria-hidden="true" className="motion-arrow">→</span>
+                </span>
               </Link>
             ))}
+            </div>
           </div>
 
           <div className="mt-8 border-t border-border">
@@ -78,9 +121,9 @@ export default async function DictionaryPage({
               ))
             ) : (
               <div className="py-12">
-                <h2 className="font-serif text-3xl">Выберите раздел</h2>
+                <h2 className="font-serif text-3xl">Выберите раздел выше</h2>
                 <p className="mt-3 max-w-xl text-muted">
-                  Термины сгруппированы по темам курса: так проще быстро найти нужное понятие.
+                  После выбора откроется список терминов по этой теме.
                 </p>
               </div>
             )}
