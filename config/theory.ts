@@ -27,8 +27,10 @@ export const theorySections: TheorySection[] = [
     title: "Экономика",
     slug: "economics",
     description: "Экономические системы, рынки, деньги, фирмы, государство и финансовые институты.",
-    status: "coming-soon",
-    order: 3
+    status: "available",
+    order: 3,
+    contentDir: "economics",
+    href: "/theory/economics"
   },
   {
     title: "Политика",
@@ -52,4 +54,5 @@ export const humanAndSocietySection = theorySections.find(
   (section) => section.slug === "human-and-society"
 )!;
 export const sociologySection = theorySections.find((section) => section.slug === "sociology")!;
+export const economicsSection = theorySections.find((section) => section.slug === "economics")!;
 export const politicsSection = theorySections.find((section) => section.slug === "politics")!;
