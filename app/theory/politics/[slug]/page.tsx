@@ -125,6 +125,9 @@ export default async function ArticlePage({ params }: PageProps) {
             <h2 className="font-serif text-2xl sm:text-3xl">О чём эта тема?</h2>
             <p className="mt-4 text-base leading-7 text-muted sm:text-lg sm:leading-8">{article.meta.description}</p>
           </section>
+          <div className="mt-8 rounded-smds border border-border bg-surface px-5 py-5 lg:hidden">
+            <TableOfContents items={toc} />
+          </div>
           <ArticleUserActions
             articleSlug={article.meta.slug}
             returnTo={`${sectionHref}/${article.meta.slug}`}
@@ -169,7 +172,7 @@ export default async function ArticlePage({ params }: PageProps) {
             </div>
           </nav>
         </div>
-        <aside className="article-sidebar border-t border-border pt-8 lg:sticky lg:top-28 lg:max-h-[calc(100vh-9rem)] lg:overflow-x-hidden lg:overflow-y-auto lg:border-l lg:border-t-0 lg:pl-5 lg:pr-2 lg:pt-0 lg:[scrollbar-gutter:stable]">
+        <aside className="article-sidebar hidden border-t border-border pt-8 lg:sticky lg:top-28 lg:block lg:max-h-[calc(100vh-9rem)] lg:overflow-x-hidden lg:overflow-y-auto lg:border-l lg:border-t-0 lg:pl-5 lg:pr-2 lg:pt-0 lg:[scrollbar-gutter:stable]">
           <TableOfContents items={toc} />
           <RelatedTasksPanel tasks={article.meta.examTasks} />
         </aside>
