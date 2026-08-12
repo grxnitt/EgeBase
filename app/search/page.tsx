@@ -5,12 +5,32 @@ import { SearchInput } from "@/components/search/search-input";
 import { Badge } from "@/components/ui/badge";
 import { theorySections } from "@/config/theory";
 import { searchTopics } from "@/lib/content/articles";
+import { splitHighlightedText } from "@/lib/search-highlight";
 
 export const metadata: Metadata = {
   title: "Поиск тем",
   description: "Поиск EgeBase по темам, разделам и текстам статей.",
   alternates: { canonical: "/search" }
 };
+
+function HighlightedText({ text, query }: { text: string; query: string }) {
+  return (
+    <>
+      {splitHighlightedText(text, query).map((part, index) =>
+        part.highlighted ? (
+          <mark
+            className="rounded-sm bg-accent/15 px-0.5 text-inherit ring-1 ring-accent/25"
+            key={`${part.text}-${index}`}
+          >
+            {part.text}
+          </mark>
+        ) : (
+          <span key={`${part.text}-${index}`}>{part.text}</span>
+        )
+      )}
+    </>
+  );
+}
 
 export default async function SearchPage({
   searchParams
@@ -91,11 +111,15 @@ export default async function SearchPage({
                       key={topic.slug}
                     >
                       <span>
-                        <span className="block text-xl font-semibold">{topic.title}</span>
-                        <span className="mt-1 block text-sm text-muted">{topic.section}</span>
+                        <span className="block text-xl font-semibold">
+                          <HighlightedText query={query} text={topic.title} />
+                        </span>
+                        <span className="mt-1 block text-sm text-muted">
+                          <HighlightedText query={query} text={topic.section} />
+                        </span>
                         {topic.excerpt ? (
                           <span className="mt-3 block max-w-2xl text-sm leading-6 text-muted">
-                            {topic.excerpt}
+                            <HighlightedText query={query} text={topic.excerpt} />
                           </span>
                         ) : null}
                       </span>
@@ -109,11 +133,15 @@ export default async function SearchPage({
                       key={topic.slug}
                     >
                       <span>
-                        <span className="block text-xl font-semibold">{topic.title}</span>
-                        <span className="mt-1 block text-sm text-muted">{topic.section}</span>
+                        <span className="block text-xl font-semibold">
+                          <HighlightedText query={query} text={topic.title} />
+                        </span>
+                        <span className="mt-1 block text-sm text-muted">
+                          <HighlightedText query={query} text={topic.section} />
+                        </span>
                         {topic.excerpt ? (
                           <span className="mt-3 block max-w-2xl text-sm leading-6 text-muted">
-                            {topic.excerpt}
+                            <HighlightedText query={query} text={topic.excerpt} />
                           </span>
                         ) : null}
                       </span>
