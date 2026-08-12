@@ -85,7 +85,7 @@ export default async function DictionaryTermPage({ params }: PageProps) {
           </Link>
         </div>
         <div>
-          <section className="rounded-smds border border-border bg-surface p-6 sm:p-8">
+          <section className="rounded-[14px] border border-border bg-surface p-6 sm:p-8">
             <p className="editorial-label">Определение</p>
             <p className="mt-5 text-xl leading-9 text-primaryDark sm:text-2xl sm:leading-10">
               {term.definition}
@@ -112,7 +112,7 @@ export default async function DictionaryTermPage({ params }: PageProps) {
               <div className="mt-5 grid gap-3 sm:grid-cols-2">
                 {relatedTerms.map((relatedTerm) => (
                   <Link
-                    className="group rounded-smds border border-border bg-surface p-4 transition-colors hover:border-accent hover:bg-subtle/55"
+                    className="group rounded-[14px] border border-border bg-surface p-4 transition-colors hover:border-accent hover:bg-subtle/55"
                     href={getDictionaryTermHref(relatedTerm.slug)}
                     key={relatedTerm.slug}
                   >

@@ -44,7 +44,7 @@ export function HomePopularList({ topics }: { topics: TopicSearchItem[] }) {
       {topics.map((topic, index) => (
         <Link
           className={cn(
-            "home-popular-item group rounded-smds border border-border bg-background p-5 transition-colors hover:border-accent sm:p-6",
+            "home-popular-item group rounded-[14px] border border-border bg-background p-5 transition-colors hover:border-accent sm:p-6",
             isVisible && "is-visible"
           )}
           href={topic.href ?? "/theory/sociology"}

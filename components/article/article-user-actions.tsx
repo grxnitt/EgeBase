@@ -303,7 +303,7 @@ export function ArticleUserActions({ articleSlug, returnTo }: ArticleUserActions
 
   if (!isLoaded || !state.isAuthenticated) {
     return (
-      <aside className="mt-7 rounded-smds border border-border bg-surface px-5 py-4">
+      <aside className="mt-7 rounded-[14px] border border-border bg-surface px-5 py-4">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-5">
           <p className="text-sm leading-6 text-muted">
             Войдите, чтобы сохранять материал и отмечать прогресс.
@@ -328,7 +328,7 @@ export function ArticleUserActions({ articleSlug, returnTo }: ArticleUserActions
   }
 
   return (
-    <aside className="mt-7 flex flex-wrap items-center gap-3 rounded-smds border border-border bg-surface px-5 py-4">
+    <aside className="mt-7 flex flex-wrap items-center gap-3 rounded-[14px] border border-border bg-surface px-5 py-4">
       <button
         aria-pressed={state.isFavorite}
         className={cn(

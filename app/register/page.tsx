@@ -21,7 +21,7 @@ export default async function RegisterPage({ searchParams }: RegisterPageProps) 
 
   return (
     <div className="container-shell py-16">
-      <section className="mx-auto max-w-xl rounded-smds border border-border bg-surface px-8 py-8">
+      <section className="mx-auto max-w-xl rounded-[14px] border border-border bg-surface px-8 py-8">
         <p className="editorial-label">Профиль</p>
         <h1 className="mt-3 font-serif text-4xl leading-tight text-primaryDark">
           Создать аккаунт

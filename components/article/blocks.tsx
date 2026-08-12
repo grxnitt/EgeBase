@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 
 export function DefinitionBlock({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <aside className="my-8 rounded-smds border-l-2 border-accent bg-surface px-6 py-5">
+    <aside className="my-8 rounded-[14px] border-l-2 border-accent bg-surface px-6 py-5">
       <p className="editorial-label">Определение</p>
       <h3 className="mt-2 text-xl font-semibold">{title}</h3>
       <div className="mt-3 text-base leading-7 text-muted">{children}</div>
@@ -14,7 +14,7 @@ export function DefinitionBlock({ title, children }: { title: string; children: 
 
 export function ExamImportantBlock({ children }: { children: React.ReactNode }) {
   return (
-    <aside className="my-8 rounded-smds border border-border bg-subtle p-6">
+    <aside className="my-8 rounded-[14px] border border-border bg-subtle p-6">
       <div className="flex items-center gap-2 text-accent">
         <CheckCircle2 aria-hidden="true" className="h-5 w-5" />
         <p className="font-semibold text-primaryDark">Важно для ЕГЭ</p>
@@ -26,7 +26,7 @@ export function ExamImportantBlock({ children }: { children: React.ReactNode }) 
 
 export function CommonMistakeBlock({ children }: { children: React.ReactNode }) {
   return (
-    <aside className="my-8 rounded-smds border border-border bg-surface p-6">
+    <aside className="my-8 rounded-[14px] border border-border bg-surface p-6">
       <div className="flex items-center gap-2 text-accent">
         <AlertTriangle aria-hidden="true" className="h-5 w-5" />
         <p className="font-semibold text-primaryDark">Типичная ошибка</p>
@@ -66,7 +66,7 @@ export function ArticleTable({
   rows?: string[][];
 }) {
   return (
-    <div className="my-8 overflow-hidden rounded-smds border border-border bg-surface">
+    <div className="my-8 overflow-hidden rounded-[14px] border border-border bg-surface">
       <table className="w-full border-collapse text-left text-sm">
         <thead className="bg-subtle text-primaryDark">
           <tr>

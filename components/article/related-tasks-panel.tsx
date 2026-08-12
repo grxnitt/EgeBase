@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export function RelatedTasksPanel({ tasks = [] }: { tasks?: number[] }) {
   return (
-    <section className="mt-8 rounded-smds border border-border bg-surface p-5">
+    <section className="mt-8 rounded-[14px] border border-border bg-surface p-5">
       <h2 className="text-base font-bold text-primaryDark">Связанные задания</h2>
       <div className="mt-4 flex flex-wrap gap-2">
         {tasks.map((task) => (

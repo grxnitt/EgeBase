@@ -18,7 +18,7 @@ export function RelatedTopics({
       <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {related.map((article) => (
           <Link
-            className="rounded-smds border border-border bg-surface p-5 transition-colors hover:border-accent"
+            className="rounded-[14px] border border-border bg-surface p-5 transition-colors hover:border-accent"
             href={`${sectionHref}/${article.meta.slug}`}
             key={article.meta.slug}
           >

@@ -125,7 +125,7 @@ export default async function ArticlePage({ params }: PageProps) {
             <h2 className="font-serif text-2xl sm:text-3xl">О чём эта тема?</h2>
             <p className="mt-4 text-base leading-7 text-muted sm:text-lg sm:leading-8">{article.meta.description}</p>
           </section>
-          <div className="mt-8 rounded-smds border border-border bg-surface px-5 py-5 lg:hidden">
+          <div className="mt-8 rounded-[14px] border border-border bg-surface px-5 py-5 lg:hidden">
             <TableOfContents items={toc} />
           </div>
           <ArticleUserActions

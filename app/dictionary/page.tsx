@@ -36,7 +36,7 @@ export default async function DictionaryPage({
           </p>
         </div>
         <div>
-          <div className="rounded-smds border border-border bg-surface p-5 sm:p-6">
+          <div className="rounded-[14px] border border-border bg-surface p-5 sm:p-6">
             <div className="flex items-center justify-between gap-4 border-b border-border pb-4">
               <div>
                 <p className="editorial-label">Разделы словаря</p>
@@ -104,7 +104,7 @@ export default async function DictionaryPage({
                   <div className="mt-5 grid gap-3">
                     {terms.map((term) => (
                       <Link
-                        className="group flex flex-col gap-3 rounded-smds border border-border bg-surface p-5 transition-colors hover:border-accent hover:bg-subtle/55 sm:flex-row sm:items-center sm:justify-between"
+                        className="group flex flex-col gap-3 rounded-[14px] border border-border bg-surface p-5 transition-colors hover:border-accent hover:bg-subtle/55 sm:flex-row sm:items-center sm:justify-between"
                         href={getDictionaryTermHref(term.slug)}
                         key={term.slug}
                       >

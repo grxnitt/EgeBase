@@ -207,7 +207,7 @@ export function ProfileDashboard({ topics, totalArticles }: ProfileDashboardProp
 
   return (
     <section className="grid grid-cols-[360px_minmax(0,1fr)] gap-10 py-10">
-      <aside className="rounded-smds border border-border bg-surface p-6">
+      <aside className="rounded-[14px] border border-border bg-surface p-6">
         <p className="editorial-label">Аккаунт</p>
         <h2 className="mt-3 text-2xl font-semibold text-primaryDark">
           {isCheckingSession ? "Проверяем вход..." : profileState.displayName || "Без имени"}
@@ -276,7 +276,7 @@ export function ProfileDashboard({ topics, totalArticles }: ProfileDashboardProp
 
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-smds border border-border bg-surface p-5">
+    <div className="rounded-[14px] border border-border bg-surface p-5">
       <p className="editorial-label">{label}</p>
       <p className="mt-3 text-3xl font-semibold text-primaryDark">{value}</p>
     </div>
@@ -308,7 +308,7 @@ function ProfileList({
         <div className="mt-5 grid grid-cols-2 gap-4">
           {visibleItems.map((item) => (
             <Link
-              className="group rounded-smds border border-border bg-surface p-5 transition-colors hover:border-accent"
+              className="group rounded-[14px] border border-border bg-surface p-5 transition-colors hover:border-accent"
               href={item.href ?? "/theory"}
               key={`${item.section}-${item.title}`}
             >
