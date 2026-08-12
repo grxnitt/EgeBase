@@ -14,8 +14,8 @@ export function RelatedTopics({
 
   return (
     <section className="mt-12 border-t border-border pt-8">
-      <h2 className="font-serif text-3xl">Связанные темы</h2>
-      <div className="mt-5 grid grid-cols-3 gap-4">
+      <h2 className="font-serif text-3xl sm:text-4xl">Связанные темы</h2>
+      <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {related.map((article) => (
           <Link
             className="rounded-smds border border-border bg-surface p-5 transition-colors hover:border-accent"
@@ -23,7 +23,9 @@ export function RelatedTopics({
             key={article.meta.slug}
           >
             <span className="editorial-label">{article.meta.section}</span>
-            <h3 className="mt-3 font-semibold">{article.meta.title}</h3>
+            <h3 className="mt-3 text-xl font-semibold leading-snug sm:text-lg">
+              {article.meta.title}
+            </h3>
           </Link>
         ))}
       </div>
