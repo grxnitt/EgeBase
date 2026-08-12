@@ -31,8 +31,7 @@ export default function HumanAndSocietyPage() {
           <h1 className="mt-5 font-serif text-4xl sm:text-5xl lg:text-6xl">{humanAndSocietySection.title}</h1>
           <p className="mt-6 text-lg leading-8 text-muted">{humanAndSocietySection.description}</p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Badge>{articles.length} опубликованных материалов</Badge>
-            <Badge>{topics.length - articles.length} тем скоро</Badge>
+            <Badge>{topics.length} тем кодификатора</Badge>
           </div>
         </div>
         <ArticleList topics={topics} />
