@@ -19,7 +19,7 @@ export default function TasksPage() {
           <p className="editorial-label mt-8">Раздел в подготовке</p>
           <h1 className="mt-4 font-serif text-6xl leading-tight">База заданий скоро появится</h1>
           <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-muted">
-            Мы работаем над заданиями и подробными разборами.
+            Здесь будут тренировочные задания и подробные разборы по темам ЕГЭ.
           </p>
           <ButtonLink className="mt-9" href="/theory">
             Вернуться к теории

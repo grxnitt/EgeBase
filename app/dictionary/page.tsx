@@ -31,8 +31,8 @@ export default async function DictionaryPage({
           <p className="editorial-label">Словарь</p>
           <h1 className="mt-5 font-serif text-5xl leading-tight sm:text-6xl">Ключевые понятия</h1>
           <p className="mt-5 max-w-xl text-base leading-7 text-muted sm:mt-6 sm:text-lg sm:leading-8">
-            Выберите раздел и откройте нужный термин. Из статей термины ведут сразу на
-            конкретное определение.
+            Короткие определения по разделам обществознания. Выберите раздел, затем откройте
+            нужное понятие.
           </p>
         </div>
         <div>
@@ -80,8 +80,7 @@ export default async function DictionaryPage({
               <div className="py-12">
                 <h2 className="font-serif text-3xl">Выберите раздел</h2>
                 <p className="mt-3 max-w-xl text-muted">
-                  Так словарь не шумит всеми терминами сразу. Нажмите на раздел выше — покажем
-                  только его понятия.
+                  Термины сгруппированы по темам курса: так проще быстро найти нужное понятие.
                 </p>
               </div>
             )}
