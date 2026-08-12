@@ -18,6 +18,10 @@ export const metadata: Metadata = {
     template: "%s | EgeBase"
   },
   description: siteConfig.description,
+  icons: {
+    icon: "/icon.png",
+    apple: "/apple-icon.png"
+  },
   alternates: {
     canonical: "/"
   },
