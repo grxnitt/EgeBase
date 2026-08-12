@@ -1,4 +1,11 @@
-import { ArticleTable, CommonMistakeBlock, DefinitionBlock, ExamImportantBlock } from "./blocks";
+import {
+  ArticleFactCard,
+  ArticleFactCards,
+  ArticleTable,
+  CommonMistakeBlock,
+  DefinitionBlock,
+  ExamImportantBlock
+} from "./blocks";
 import { DictionaryLinkedText } from "./dictionary-linked-text";
 import { createUniqueHeadingSlugger } from "@/lib/utils";
 
@@ -40,6 +47,8 @@ export function createMdxComponents() {
     DefinitionBlock,
     ExamImportantBlock,
     CommonMistakeBlock,
+    ArticleFactCards,
+    ArticleFactCard,
     ArticleTable
   };
 }

@@ -95,3 +95,59 @@ export function ArticleTable({
     </div>
   );
 }
+
+type ArticleFactCardProps = {
+  label1?: string;
+  value1?: string;
+  label2?: string;
+  value2?: string;
+  label3?: string;
+  value3?: string;
+  label4?: string;
+  value4?: string;
+};
+
+export function ArticleFactCards({ children }: { children: React.ReactNode }) {
+  return <div className="my-8 grid gap-3">{children}</div>;
+}
+
+export function ArticleFactCard({
+  label1,
+  value1,
+  label2,
+  value2,
+  label3,
+  value3,
+  label4,
+  value4
+}: ArticleFactCardProps) {
+  const fields = [
+    { label: label1, value: value1 },
+    { label: label2, value: value2 },
+    { label: label3, value: value3 },
+    { label: label4, value: value4 }
+  ].filter((field) => field.label && field.value);
+
+  return (
+    <section className="rounded-[14px] border border-border bg-surface px-4 py-4 sm:px-5">
+      <div className="grid gap-0 sm:grid-cols-3 sm:gap-5">
+        {fields.map((field, index) => (
+          <div
+            className={cn(
+              "py-3 first:pt-0 last:pb-0 sm:py-0",
+              index > 0 && "border-t border-border sm:border-t-0"
+            )}
+            key={`${field.label}-${field.value}`}
+          >
+            <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-accent">
+              {field.label}
+            </p>
+            <p className="mt-1 text-base leading-7 text-muted sm:text-sm sm:leading-6">
+              {field.value}
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
