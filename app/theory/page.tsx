@@ -16,12 +16,12 @@ export default function TheoryPage() {
   const upcomingSections = theorySections.filter((section) => section.status === "coming-soon");
 
   return (
-    <div className="container-shell py-12">
+    <div className="container-shell py-8 md:py-12">
       <Breadcrumbs items={[{ label: "Главная", href: "/" }, { label: "Теория" }]} />
-      <section className="grid grid-cols-[0.8fr_1.2fr] gap-16 py-16">
+      <section className="grid gap-10 py-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16 lg:py-16">
         <div>
           <p className="editorial-label">Каталог</p>
-          <h1 className="mt-5 font-serif text-6xl leading-tight">Теория по обществознанию</h1>
+          <h1 className="mt-5 font-serif text-4xl leading-tight sm:text-5xl lg:text-6xl">Теория по обществознанию</h1>
           <p className="mt-6 text-lg leading-8 text-muted">
             Разделы справочника собирают ключевые темы обществознания в единую структуру:
             от базовых понятий до экзаменационных акцентов.
@@ -37,18 +37,18 @@ export default function TheoryPage() {
                 href={section.href ?? "/theory"}
                 key={section.slug}
               >
-                <div className="flex items-start justify-between gap-6">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
                   <div>
                     <p className="editorial-label">Доступный раздел</p>
-                    <h2 className="mt-3 font-serif text-5xl">{section.title}</h2>
+                    <h2 className="mt-3 font-serif text-3xl sm:text-4xl lg:text-5xl">{section.title}</h2>
                     <p className="mt-4 max-w-2xl text-muted">{section.description}</p>
                   </div>
-                  <Badge>{articles.length} материалов</Badge>
+                  <Badge className="w-fit">{articles.length} материалов</Badge>
                 </div>
               </Link>
             );
           })}
-          <div className="mt-10 grid grid-cols-2 gap-4">
+          <div className="mt-10 grid gap-4 sm:grid-cols-2">
             {upcomingSections.map((section) => (
               <div className="rounded-smds border border-border bg-surface p-5 opacity-70" key={section.slug}>
                 <h3 className="font-semibold">{section.title}</h3>

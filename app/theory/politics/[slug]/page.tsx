@@ -98,7 +98,7 @@ export default async function ArticlePage({ params }: PageProps) {
   };
 
   return (
-    <div className="container-shell py-12">
+    <div className="container-shell py-8 md:py-12">
       <script
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
         type="application/ld+json"
@@ -114,16 +114,16 @@ export default async function ArticlePage({ params }: PageProps) {
           { label: article.meta.title }
         ]}
       />
-      <article className="grid grid-cols-[minmax(0,1fr)_240px] gap-12 py-14">
+      <article className="grid gap-10 py-10 lg:grid-cols-[minmax(0,1fr)_240px] lg:gap-12 lg:py-14">
         <div>
           <p className="editorial-label">{article.meta.section}</p>
-          <h1 className="mt-5 font-serif text-6xl leading-tight">{article.meta.title}</h1>
+          <h1 className="mt-5 font-serif text-4xl leading-tight sm:text-5xl lg:text-6xl">{article.meta.title}</h1>
           <div className="mt-6 flex flex-wrap gap-3">
             <Badge>{formatExamYear(article.meta.examYear)}</Badge>
           </div>
-          <section className="mt-10 border-y border-border py-7">
-            <h2 className="font-serif text-3xl">О чём эта тема?</h2>
-            <p className="mt-4 text-lg leading-8 text-muted">{article.meta.description}</p>
+          <section className="mt-8 border-y border-border py-6 sm:mt-10 sm:py-7">
+            <h2 className="font-serif text-2xl sm:text-3xl">О чём эта тема?</h2>
+            <p className="mt-4 text-base leading-7 text-muted sm:text-lg sm:leading-8">{article.meta.description}</p>
           </section>
           <ArticleUserActions
             articleSlug={article.meta.slug}
@@ -135,7 +135,7 @@ export default async function ArticlePage({ params }: PageProps) {
           <RelatedTopics articles={allArticles} currentSlug={article.meta.slug} sectionHref={sectionHref} />
           <nav
             aria-label="Предыдущая и следующая тема"
-            className="mt-12 grid grid-cols-2 gap-5 border-t border-border pt-8"
+            className="mt-12 grid gap-6 border-t border-border pt-8 sm:grid-cols-2 sm:gap-5"
           >
             <div className="article-adjacent-item group border-t border-transparent pt-4">
               <p className="editorial-label">Предыдущая</p>
@@ -151,7 +151,7 @@ export default async function ArticlePage({ params }: PageProps) {
                 <span className="mt-2 block text-sm text-muted">Это первая тема раздела.</span>
               )}
             </div>
-            <div className="article-adjacent-item group border-t border-transparent pt-4 text-right">
+            <div className="article-adjacent-item group border-t border-transparent pt-4 sm:text-right">
               <p className="editorial-label">Следующая</p>
               {adjacent.next ? (
                 <TextLink
@@ -169,7 +169,7 @@ export default async function ArticlePage({ params }: PageProps) {
             </div>
           </nav>
         </div>
-        <aside className="article-sidebar sticky top-28 max-h-[calc(100vh-9rem)] overflow-x-hidden overflow-y-auto border-l border-border pl-5 pr-2 [scrollbar-gutter:stable]">
+        <aside className="article-sidebar border-t border-border pt-8 lg:sticky lg:top-28 lg:max-h-[calc(100vh-9rem)] lg:overflow-x-hidden lg:overflow-y-auto lg:border-l lg:border-t-0 lg:pl-5 lg:pr-2 lg:pt-0 lg:[scrollbar-gutter:stable]">
           <TableOfContents items={toc} />
           <RelatedTasksPanel tasks={article.meta.examTasks} />
         </aside>

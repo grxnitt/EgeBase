@@ -4,6 +4,7 @@ import { Bookmark, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { cn } from "@/lib/utils";
 
 type ArticleUserActionsProps = {
@@ -87,6 +88,12 @@ export function ArticleUserActions({ articleSlug, returnTo }: ArticleUserActions
     let isMounted = true;
 
     async function loadState() {
+      if (!isSupabaseConfigured()) {
+        setState(initialState);
+        setIsLoaded(true);
+        return;
+      }
+
       const supabase = createClient();
       const {
         data: { session }
@@ -297,11 +304,11 @@ export function ArticleUserActions({ articleSlug, returnTo }: ArticleUserActions
   if (!isLoaded || !state.isAuthenticated) {
     return (
       <aside className="mt-7 rounded-smds border border-border bg-surface px-5 py-4">
-        <div className="flex items-center justify-between gap-5">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-5">
           <p className="text-sm leading-6 text-muted">
             Войдите, чтобы сохранять материал и отмечать прогресс.
           </p>
-          <div className="flex shrink-0 items-center gap-3 text-sm font-semibold">
+          <div className="flex shrink-0 flex-wrap items-center gap-3 text-sm font-semibold">
             <Link
               className="text-primary underline decoration-border underline-offset-4 transition-colors hover:text-accent hover:decoration-accent"
               href={`/login?next=${encodeURIComponent(returnTo)}`}

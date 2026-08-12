@@ -7,20 +7,20 @@ export function ArticleCard({ topic, index }: { topic: TopicSearchItem; index: n
 
   if (topic.status === "coming-soon") {
     return (
-      <div className="grid grid-cols-[72px_1fr_auto] gap-5 border-t border-border py-6 opacity-70">
+      <div className="grid grid-cols-[42px_1fr] gap-4 border-t border-border py-6 opacity-70 sm:grid-cols-[72px_1fr_auto] sm:gap-5">
         <span className="font-serif text-2xl text-muted">{number}</span>
         <div>
           <h3 className="text-xl font-semibold">{topic.title}</h3>
           <p className="mt-2 text-sm text-muted">Материал готовится к публикации.</p>
         </div>
-        <Badge>Скоро</Badge>
+        <Badge className="col-start-2 w-fit sm:col-start-auto">Скоро</Badge>
       </div>
     );
   }
 
   return (
     <Link
-      className="group grid grid-cols-[72px_1fr_auto] gap-5 border-t border-border py-6 transition-colors hover:border-accent"
+      className="group grid grid-cols-[42px_1fr] gap-4 border-t border-border py-6 transition-colors hover:border-accent sm:grid-cols-[72px_1fr_auto] sm:gap-5"
       href={topic.href ?? "/theory/sociology"}
     >
       <span className="font-serif text-2xl text-accent">{number}</span>
@@ -28,7 +28,7 @@ export function ArticleCard({ topic, index }: { topic: TopicSearchItem; index: n
         <h3 className="text-xl font-semibold transition-colors group-hover:text-accent">{topic.title}</h3>
         <p className="mt-2 text-sm text-muted">Открыть материал раздела «{topic.section}».</p>
       </div>
-      <span className="text-sm font-semibold text-accent">
+      <span className="col-start-2 text-sm font-semibold text-accent sm:col-start-auto">
         Читать <span aria-hidden="true" className="motion-arrow">→</span>
       </span>
     </Link>

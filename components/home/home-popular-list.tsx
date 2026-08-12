@@ -40,11 +40,11 @@ export function HomePopularList({ topics }: { topics: TopicSearchItem[] }) {
   }, []);
 
   return (
-    <div className="grid grid-cols-3 gap-6 pt-8" ref={gridRef}>
+    <div className="grid gap-4 pt-8 md:grid-cols-3 md:gap-6" ref={gridRef}>
       {topics.map((topic, index) => (
         <Link
           className={cn(
-            "home-popular-item group rounded-smds border border-border bg-background p-6 transition-colors hover:border-accent",
+            "home-popular-item group rounded-smds border border-border bg-background p-5 transition-colors hover:border-accent sm:p-6",
             isVisible && "is-visible"
           )}
           href={topic.href ?? "/theory/sociology"}
@@ -54,7 +54,7 @@ export function HomePopularList({ topics }: { topics: TopicSearchItem[] }) {
           <span className="font-serif text-3xl text-accent">
             {String(index + 1).padStart(2, "0")}
           </span>
-          <h3 className="mt-8 text-2xl font-semibold">{topic.title}</h3>
+          <h3 className="mt-5 text-xl font-semibold sm:mt-8 sm:text-2xl">{topic.title}</h3>
           <p className="mt-3 text-sm leading-6 text-muted">
             Ключевая тема раздела «{topic.section}» для повторения теории.
           </p>

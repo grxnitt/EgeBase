@@ -66,7 +66,7 @@ export function HomeStructureList() {
       {structureItems.map((item, index) => (
         <li
           className={cn(
-            "home-structure-item grid grid-cols-[40px_1fr] gap-5 border-t border-border pt-5",
+            "home-structure-item grid grid-cols-[34px_1fr] gap-4 border-t border-border pt-5 sm:grid-cols-[40px_1fr] sm:gap-5",
             isVisible && "is-visible"
           )}
           key={item.title}
