@@ -91,24 +91,9 @@ export default async function DictionaryTermPage({ params }: PageProps) {
               {term.definition}
             </p>
           </section>
-          {term.aliases?.length ? (
-            <section className="mt-8 border-t border-border pt-6">
-              <h2 className="font-serif text-3xl leading-tight">Встречается как</h2>
-              <div className="mt-4 flex flex-wrap gap-2">
-                {term.aliases.map((alias) => (
-                  <span
-                    className="rounded-full border border-border bg-surface px-4 py-2 text-sm font-semibold text-muted"
-                    key={alias}
-                  >
-                    {alias}
-                  </span>
-                ))}
-              </div>
-            </section>
-          ) : null}
           {relatedTerms.length ? (
             <section className="mt-10 border-t border-border pt-7">
-              <h2 className="font-serif text-3xl leading-tight">Другие термины раздела</h2>
+              <h2 className="font-serif text-3xl leading-tight">Связанные термины</h2>
               <div className="mt-5 grid gap-3 sm:grid-cols-2">
                 {relatedTerms.map((relatedTerm) => (
                   <Link
