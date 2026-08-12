@@ -61,17 +61,14 @@ export default async function DictionaryPage({
                   <div className="mt-5 grid gap-3">
                     {terms.map((term) => (
                       <Link
-                        className="group rounded-smds border border-border bg-surface p-5 transition-colors hover:border-accent hover:bg-subtle/55"
+                        className="group flex flex-col gap-3 rounded-smds border border-border bg-surface p-5 transition-colors hover:border-accent hover:bg-subtle/55 sm:flex-row sm:items-center sm:justify-between"
                         href={getDictionaryTermHref(term.slug)}
                         key={term.slug}
                       >
                         <span className="block text-xl font-semibold text-primaryDark group-hover:text-accent">
                           {term.title}
                         </span>
-                        <span className="mt-2 block text-sm leading-6 text-muted">
-                          {term.definition}
-                        </span>
-                        <span className="mt-4 block text-sm font-semibold text-accent">
+                        <span className="text-sm font-semibold text-accent">
                           Открыть определение <span aria-hidden="true" className="motion-arrow">→</span>
                         </span>
                       </Link>
