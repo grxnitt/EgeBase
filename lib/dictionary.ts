@@ -174,3 +174,24 @@ export function getDictionaryTerms() {
     (a, b) => a.section.localeCompare(b.section, "ru") || a.title.localeCompare(b.title, "ru")
   );
 }
+
+export function getDictionaryTermBySlug(slug: string) {
+  return dictionaryTerms.find((term) => term.slug === slug);
+}
+
+export function getDictionaryTermHref(slug: string) {
+  return `/dictionary/${slug}`;
+}
+
+export function getDictionarySections() {
+  return getDictionaryTerms().reduce<Array<{ section: string; terms: DictionaryTerm[] }>>((groups, term) => {
+    const existingGroup = groups.find((group) => group.section === term.section);
+    if (existingGroup) {
+      existingGroup.terms.push(term);
+    } else {
+      groups.push({ section: term.section, terms: [term] });
+    }
+
+    return groups;
+  }, []);
+}

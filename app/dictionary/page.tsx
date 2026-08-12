@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Breadcrumbs } from "@/components/navigation/breadcrumbs";
-import { getDictionaryTerms } from "@/lib/dictionary";
+import { getDictionarySections, getDictionaryTermHref } from "@/lib/dictionary";
 
 export const metadata: Metadata = {
   title: "Словарь",
@@ -8,18 +9,19 @@ export const metadata: Metadata = {
   alternates: { canonical: "/dictionary" }
 };
 
-export default function DictionaryPage() {
-  const terms = getDictionaryTerms();
-  const groupedTerms = terms.reduce<Array<{ section: string; terms: typeof terms }>>((groups, term) => {
-    const existingGroup = groups.find((group) => group.section === term.section);
-    if (existingGroup) {
-      existingGroup.terms.push(term);
-    } else {
-      groups.push({ section: term.section, terms: [term] });
-    }
-
-    return groups;
-  }, []);
+export default async function DictionaryPage({
+  searchParams
+}: {
+  searchParams?: Promise<{ section?: string }>;
+}) {
+  const resolvedSearchParams = await searchParams;
+  const groupedTerms = getDictionarySections();
+  const selectedSection = groupedTerms.some((group) => group.section === resolvedSearchParams?.section)
+    ? resolvedSearchParams?.section
+    : undefined;
+  const visibleGroups = selectedSection
+    ? groupedTerms.filter((group) => group.section === selectedSection)
+    : [];
 
   return (
     <div className="container-shell py-8 md:py-12">
@@ -29,30 +31,64 @@ export default function DictionaryPage() {
           <p className="editorial-label">Словарь</p>
           <h1 className="mt-5 font-serif text-5xl leading-tight sm:text-6xl">Ключевые понятия</h1>
           <p className="mt-5 max-w-xl text-base leading-7 text-muted sm:mt-6 sm:text-lg sm:leading-8">
-            Термины из статей теперь подсвечиваются и ведут сюда. Словарь будет постепенно
-            расширяться вместе с теорией.
+            Выберите раздел и откройте нужный термин. Из статей термины ведут сразу на
+            конкретное определение.
           </p>
         </div>
-        <div className="space-y-10">
-          {groupedTerms.map(({ section, terms: sectionTerms }) => (
-            <section className="border-t border-border pt-6" key={section}>
-              <h2 className="font-serif text-3xl leading-tight">{section}</h2>
-              <div className="mt-5 grid gap-4">
-                {sectionTerms.map((term) => (
-                  <article
-                    className="scroll-mt-28 rounded-smds border border-border bg-surface p-5 transition-colors target:border-accent target:bg-subtle/55"
-                    id={term.slug}
-                    key={term.slug}
-                  >
-                    <h3 className="text-xl font-semibold text-primaryDark">{term.title}</h3>
-                    <p className="mt-3 text-sm leading-6 text-muted sm:text-base sm:leading-7">
-                      {term.definition}
-                    </p>
-                  </article>
-                ))}
+        <div>
+          <div className="flex flex-wrap gap-2">
+            {groupedTerms.map(({ section, terms }) => (
+              <Link
+                className={`rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${
+                  selectedSection === section
+                    ? "border-accent bg-accent text-surface"
+                    : "border-border bg-surface text-muted hover:border-accent hover:text-accent"
+                }`}
+                href={`/dictionary?section=${encodeURIComponent(section)}`}
+                key={section}
+              >
+                {section}
+                <span className="ml-2 text-xs opacity-70">{terms.length}</span>
+              </Link>
+            ))}
+          </div>
+
+          <div className="mt-8 border-t border-border">
+            {visibleGroups.length ? (
+              visibleGroups.map(({ section, terms }) => (
+                <section className="py-7" key={section}>
+                  <h2 className="font-serif text-3xl leading-tight">{section}</h2>
+                  <div className="mt-5 grid gap-3">
+                    {terms.map((term) => (
+                      <Link
+                        className="group rounded-smds border border-border bg-surface p-5 transition-colors hover:border-accent hover:bg-subtle/55"
+                        href={getDictionaryTermHref(term.slug)}
+                        key={term.slug}
+                      >
+                        <span className="block text-xl font-semibold text-primaryDark group-hover:text-accent">
+                          {term.title}
+                        </span>
+                        <span className="mt-2 block text-sm leading-6 text-muted">
+                          {term.definition}
+                        </span>
+                        <span className="mt-4 block text-sm font-semibold text-accent">
+                          Открыть определение <span aria-hidden="true" className="motion-arrow">→</span>
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                </section>
+              ))
+            ) : (
+              <div className="py-12">
+                <h2 className="font-serif text-3xl">Выберите раздел</h2>
+                <p className="mt-3 max-w-xl text-muted">
+                  Так словарь не шумит всеми терминами сразу. Нажмите на раздел выше — покажем
+                  только его понятия.
+                </p>
               </div>
-            </section>
-          ))}
+            )}
+          </div>
         </div>
       </section>
     </div>

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Children, isValidElement, type ReactNode } from "react";
-import { dictionaryTerms } from "@/lib/dictionary";
+import { dictionaryTerms, getDictionaryTermHref } from "@/lib/dictionary";
 import { splitDictionaryTermText } from "@/lib/dictionary-linking";
 
 type DictionaryLinkedTextProps = {
@@ -20,7 +20,7 @@ function renderDictionaryLinkedNode(node: ReactNode, linkedTermSlugs: Set<string
       linkedTermSlugs.add(part.slug);
 
       return (
-        <Link className="dictionary-term-link" href={`/dictionary#${part.slug}`} key={`${part.slug}-${index}`}>
+        <Link className="dictionary-term-link" href={getDictionaryTermHref(part.slug)} key={`${part.slug}-${index}`}>
           {part.text}
         </Link>
       );

@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { getDictionaryTermHref } from "../lib/dictionary.ts";
 import { splitDictionaryTermText } from "../lib/dictionary-linking.ts";
 
 const terms = [
@@ -39,4 +40,8 @@ test("does not link a term inside another word", () => {
   assert.deepEqual(splitDictionaryTermText("Псевдостратификация — не термин.", terms), [
     { text: "Псевдостратификация — не термин.", slug: null }
   ]);
+});
+
+test("builds direct dictionary term href", () => {
+  assert.equal(getDictionaryTermHref("social-stratification"), "/dictionary/social-stratification");
 });
