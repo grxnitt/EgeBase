@@ -45,8 +45,10 @@ export const theorySections: TheorySection[] = [
     title: "Право",
     slug: "law",
     description: "Право, нормы, отрасли, правоотношения, юридическая ответственность и основы законодательства.",
-    status: "coming-soon",
-    order: 5
+    status: "available",
+    order: 5,
+    contentDir: "law",
+    href: "/theory/law"
   }
 ];
 
@@ -56,3 +58,4 @@ export const humanAndSocietySection = theorySections.find(
 export const sociologySection = theorySections.find((section) => section.slug === "sociology")!;
 export const economicsSection = theorySections.find((section) => section.slug === "economics")!;
 export const politicsSection = theorySections.find((section) => section.slug === "politics")!;
+export const lawSection = theorySections.find((section) => section.slug === "law")!;

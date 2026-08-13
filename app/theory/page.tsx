@@ -43,7 +43,7 @@ export default function TheoryPage() {
                     <h2 className="mt-3 font-serif text-3xl sm:text-4xl lg:text-5xl">{section.title}</h2>
                     <p className="mt-4 max-w-2xl text-muted">{section.description}</p>
                   </div>
-                  <Badge className="w-fit">{articles.length} материалов</Badge>
+                  <Badge className="w-fit">{articles.length} тем кодификатора</Badge>
                 </div>
               </Link>
             );
