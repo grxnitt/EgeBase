@@ -1,12 +1,16 @@
+import { dictionaryFeatureCatalog } from "./dictionary-features.js";
+
 export type DictionaryTerm = {
   title: string;
   slug: string;
   section: string;
   definition: string;
+  features?: string[];
+  linkable?: boolean;
   aliases?: string[];
 };
 
-export const dictionaryTerms: DictionaryTerm[] = [
+const baseDictionaryTerms: DictionaryTerm[] = [
   {
     title: "Общество",
     slug: "society",
@@ -1128,6 +1132,74 @@ export const dictionaryTerms: DictionaryTerm[] = [
       "Органы и институты, обеспечивающие защиту законности, прав граждан и общественного порядка.",
     aliases: ["правоохранительных органов", "правоохранительными органами"]
   }
+];
+
+function normalizeDictionaryTitle(value: string) {
+  return value
+    .toLocaleLowerCase("ru-RU")
+    .replaceAll("ё", "е")
+    .replaceAll("государст- венная", "государственная")
+    .replace(/\([^)]*\)/g, "")
+    .replace(/^(.+?)\s+как\s+/, "$1 ")
+    .replace(/[^0-9a-zа-я ]/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function getDefinitionForFeatureOnlyTerm(title: string) {
+  return `Понятие «${title}» встречается в материалах для подготовки к заданию 18 ЕГЭ по обществознанию; ниже приведены его ключевые признаки.`;
+}
+
+const baseTermsByNormalizedTitle = new Map(
+  baseDictionaryTerms.flatMap((term) =>
+    [term.title, ...(term.aliases ?? [])].map((variant) => [normalizeDictionaryTitle(variant), term] as const)
+  )
+);
+
+const featureEntriesByBaseSlug = new Map<string, string[]>();
+const featureOnlyTerms: DictionaryTerm[] = [];
+const usedSlugs = new Set(baseDictionaryTerms.map((term) => term.slug));
+
+for (const entry of dictionaryFeatureCatalog) {
+  const normalizedSourceTitle = normalizeDictionaryTitle(entry.sourceTitle);
+  const normalizedTitle = normalizeDictionaryTitle(entry.title);
+  const baseTerm =
+    baseTermsByNormalizedTitle.get(normalizedSourceTitle) ?? baseTermsByNormalizedTitle.get(normalizedTitle);
+
+  if (baseTerm) {
+    featureEntriesByBaseSlug.set(baseTerm.slug, [
+      ...(featureEntriesByBaseSlug.get(baseTerm.slug) ?? []),
+      ...entry.features
+    ]);
+    continue;
+  }
+
+  let slug = entry.slug;
+  let suffix = 2;
+  while (usedSlugs.has(slug)) {
+    slug = `${entry.slug}-${suffix}`;
+    suffix += 1;
+  }
+  usedSlugs.add(slug);
+
+  featureOnlyTerms.push({
+    title: entry.title,
+    slug,
+    section: entry.section,
+    definition: getDefinitionForFeatureOnlyTerm(entry.title),
+    features: entry.features,
+    linkable: false,
+    aliases: entry.sourceTitle === entry.title ? undefined : [entry.sourceTitle]
+  });
+}
+
+export const dictionaryTerms: DictionaryTerm[] = [
+  ...baseDictionaryTerms.map((term) => {
+    const features = [...new Set(featureEntriesByBaseSlug.get(term.slug) ?? [])];
+
+    return features.length ? { ...term, features } : term;
+  }),
+  ...featureOnlyTerms
 ];
 
 export function getDictionaryTerms() {

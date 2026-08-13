@@ -91,6 +91,19 @@ export default async function DictionaryTermPage({ params }: PageProps) {
               {term.definition}
             </p>
           </section>
+          {term.features?.length ? (
+            <section className="mt-5 rounded-[14px] border border-border bg-surface p-6 sm:p-8">
+              <p className="editorial-label">Признаки для задания 18</p>
+              <ul className="mt-5 space-y-3 text-base leading-7 text-primaryDark sm:text-lg sm:leading-8">
+                {term.features.map((feature) => (
+                  <li className="flex gap-3" key={feature}>
+                    <span aria-hidden="true" className="mt-3 h-2 w-2 shrink-0 rounded-full bg-accent" />
+                    <span>{feature}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
           {relatedTerms.length ? (
             <section className="mt-10 border-t border-border pt-7">
               <h2 className="font-serif text-3xl leading-tight">Связанные термины</h2>

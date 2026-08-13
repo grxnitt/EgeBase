@@ -20,7 +20,7 @@ function isTermBoundary(character: string | undefined) {
 
 function getTermVariants(terms: DictionaryTerm[], excludedSlugs?: ReadonlySet<string>) {
   return terms
-    .filter((term) => !excludedSlugs?.has(term.slug))
+    .filter((term) => term.linkable !== false && !excludedSlugs?.has(term.slug))
     .flatMap((term) =>
       [term.title, ...(term.aliases ?? [])].map((variant) => ({
         normalized: normalizeTermText(variant),
