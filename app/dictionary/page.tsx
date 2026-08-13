@@ -51,10 +51,10 @@ export default async function DictionaryPage({
               ) : null}
             </div>
 
-            <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="dictionary-section-grid mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
             {groupedTerms.map(({ section, terms }) => (
               <Link
-                className={`group rounded-[14px] border p-5 transition-colors ${
+                className={`dictionary-section-card group rounded-[14px] border p-5 transition-colors ${
                   selectedSection === section
                     ? "border-accent bg-primary text-surface shadow-editorial"
                     : "border-border bg-background hover:border-accent hover:bg-subtle/55"

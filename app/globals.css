@@ -206,6 +206,17 @@ h3.font-serif {
   color: var(--color-accent);
 }
 
+@media (min-width: 1280px) {
+  .dictionary-section-card {
+    grid-column: span 2;
+  }
+
+  .dictionary-section-grid:has(.dictionary-section-card:nth-child(5):last-child)
+    .dictionary-section-card:nth-last-child(-n + 2) {
+    grid-column: span 3;
+  }
+}
+
 .motion-arrow {
   display: inline-block;
   transition: transform var(--motion-fast) var(--ease-standard);
