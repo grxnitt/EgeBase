@@ -44,7 +44,7 @@ export const theorySections: TheorySection[] = [
   {
     title: "Право",
     slug: "law",
-    description: "Право, нормы, отрасли, правоотношения, юридическая ответственность и основы законодательства.",
+    description: "Право, Конституция, отрасли права, судопроизводство, ответственность и правоохранительные органы.",
     status: "available",
     order: 5,
     contentDir: "law",
