@@ -27,7 +27,7 @@ export default function TheoryPage() {
             обществознанию<span className="text-accent">.</span>
           </h1>
         </div>
-        <div className="lg:pt-24 xl:pt-20">
+        <div className="lg:-mt-6 xl:-mt-8">
           {availableSections.map((section) => {
             const articles = getSectionArticles(section.slug);
 
