@@ -74,7 +74,7 @@ export default async function DictionaryTermPage({ params }: PageProps) {
         ]}
       />
       <article className="grid gap-10 py-10 lg:grid-cols-[0.75fr_1.25fr] lg:gap-16 lg:py-16">
-        <div>
+        <div className="min-w-0">
           <p className="editorial-label">{term.section}</p>
           <Link
             className="mt-4 inline-flex text-sm font-semibold text-primary underline decoration-border underline-offset-4 transition-colors hover:text-accent hover:decoration-accent sm:mt-8"
@@ -82,7 +82,9 @@ export default async function DictionaryTermPage({ params }: PageProps) {
           >
             ← Все термины раздела
           </Link>
-          <h1 className="mt-10 font-serif text-5xl leading-tight sm:mt-5 sm:text-6xl">{term.title}</h1>
+          <h1 className="mt-10 max-w-full text-balance font-serif text-[clamp(3.2rem,14vw,5.4rem)] leading-[0.95] [overflow-wrap:anywhere] sm:mt-5 sm:text-6xl sm:leading-tight">
+            {term.title}
+          </h1>
         </div>
         <div>
           <section className="rounded-[14px] border border-border bg-surface p-6 sm:p-8">
