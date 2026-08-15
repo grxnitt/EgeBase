@@ -76,13 +76,13 @@ export default async function DictionaryTermPage({ params }: PageProps) {
       <article className="grid gap-10 py-10 lg:grid-cols-[0.75fr_1.25fr] lg:gap-16 lg:py-16">
         <div>
           <p className="editorial-label">{term.section}</p>
-          <h1 className="mt-5 font-serif text-5xl leading-tight sm:text-6xl">{term.title}</h1>
           <Link
-            className="mt-8 inline-flex text-sm font-semibold text-primary underline decoration-border underline-offset-4 transition-colors hover:text-accent hover:decoration-accent"
+            className="mt-4 inline-flex text-sm font-semibold text-primary underline decoration-border underline-offset-4 transition-colors hover:text-accent hover:decoration-accent sm:mt-8"
             href={`/dictionary?section=${encodeURIComponent(term.section)}`}
           >
             ← Все термины раздела
           </Link>
+          <h1 className="mt-10 font-serif text-5xl leading-tight sm:mt-5 sm:text-6xl">{term.title}</h1>
         </div>
         <div>
           <section className="rounded-[14px] border border-border bg-surface p-6 sm:p-8">
