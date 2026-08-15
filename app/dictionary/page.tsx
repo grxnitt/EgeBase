@@ -29,11 +29,11 @@ export default async function DictionaryPage({
       <section className="grid gap-10 py-10 lg:grid-cols-[0.75fr_1.25fr] lg:gap-16 lg:py-16">
         <div>
           <p className="editorial-label">Словарь</p>
-          <h1 className="mt-5 font-serif text-5xl leading-tight sm:text-6xl">Ключевые понятия</h1>
-          <p className="mt-5 max-w-xl text-base leading-7 text-muted sm:mt-6 sm:text-lg sm:leading-8">
-            Короткие определения по разделам обществознания. Выберите раздел, затем откройте
-            нужное понятие.
-          </p>
+          <h1 className="display-title mt-5">
+            Ключевые
+            <br />
+            понятия<span className="text-accent">.</span>
+          </h1>
         </div>
         <div>
           <div className="rounded-[14px] border border-border bg-surface p-5 sm:p-6">
