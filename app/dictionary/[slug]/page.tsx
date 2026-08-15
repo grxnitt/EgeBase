@@ -82,7 +82,7 @@ export default async function DictionaryTermPage({ params }: PageProps) {
           >
             ← Все термины раздела
           </Link>
-          <h1 className="mt-10 max-w-full font-serif text-[clamp(3.2rem,14vw,5.4rem)] leading-[0.95] [overflow-wrap:anywhere] sm:mt-5 sm:text-6xl sm:leading-tight sm:[overflow-wrap:normal] lg:text-7xl">
+          <h1 className="mt-10 max-w-full font-serif text-[clamp(3.2rem,14vw,5.4rem)] leading-[0.95] [overflow-wrap:anywhere] sm:mt-5 sm:text-6xl sm:leading-tight sm:[overflow-wrap:normal] xl:text-7xl">
             {term.title}
           </h1>
         </div>
