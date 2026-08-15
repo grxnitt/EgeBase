@@ -73,7 +73,7 @@ export default async function DictionaryTermPage({ params }: PageProps) {
           { label: term.title }
         ]}
       />
-      <article className="grid gap-10 py-10 lg:grid-cols-[0.75fr_1.25fr] lg:gap-16 lg:py-16">
+      <article className="grid gap-10 py-10 lg:grid-cols-[0.95fr_1.05fr] lg:gap-16 lg:py-16">
         <div className="min-w-0">
           <p className="editorial-label">{term.section}</p>
           <Link
