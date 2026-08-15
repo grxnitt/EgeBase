@@ -21,7 +21,7 @@ export default function TheoryPage() {
       <section className="grid gap-10 py-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16 lg:py-16">
         <div>
           <p className="editorial-label">Каталог</p>
-          <h1 className="display-title mt-5">
+          <h1 className="mt-5 font-serif text-4xl leading-tight sm:text-5xl lg:text-6xl">
             Теория по
             <br />
             обществознанию<span className="text-accent">.</span>
