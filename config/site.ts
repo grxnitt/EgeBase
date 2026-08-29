@@ -6,6 +6,7 @@ export const siteConfig = {
   nav: [
     { href: "/theory", label: "Теория" },
     { href: "/dictionary", label: "Словарь" },
+    { href: "/cards", label: "Карточки" },
     { href: "/tasks", label: "Задания" }
   ]
 };

@@ -12,7 +12,7 @@ export function SearchInput({
   placeholder?: string;
 }) {
   const inputId = compact ? "header-search" : "search-page-input";
-  const accessibleLabel = label ?? (compact ? "Поиск по темам" : "Введите название темы");
+  const accessibleLabel = label ?? (compact ? "Поиск по темам и терминам" : "Введите тему или термин");
 
   return (
     <form action="/search" className="flex flex-col gap-3 sm:flex-row sm:gap-2" method="get" role="search">
@@ -28,13 +28,13 @@ export function SearchInput({
           className="h-12 w-full rounded-smds border border-border bg-surface pl-12 pr-4 text-base text-text transition-colors placeholder:text-muted hover:border-accent focus:border-accent focus:bg-background sm:h-10 sm:pl-9 sm:pr-3 sm:text-sm"
           id={inputId}
           name="q"
-          placeholder={placeholder ?? "Найти тему"}
+          placeholder={placeholder ?? "Найти тему или термин"}
           type="search"
           defaultValue={defaultValue}
         />
       </div>
       <button
-        aria-label={compact ? "Запустить поиск по темам" : undefined}
+        aria-label={compact ? "Запустить поиск по темам и терминам" : undefined}
         className={
           compact
             ? "sr-only"

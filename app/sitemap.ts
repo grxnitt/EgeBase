@@ -10,7 +10,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const availableSectionRoutes = theorySections
     .filter((section) => section.status === "available" && section.href)
     .map((section) => section.href!);
-  const staticRoutes = ["", "/theory", ...availableSectionRoutes, "/dictionary", "/tasks", "/search"];
+  const staticRoutes = ["", "/theory", ...availableSectionRoutes, "/dictionary", "/cards", "/tasks", "/search"];
   const articleRoutes = getPublishedArticles().flatMap((article) => {
     const section = theorySections.find((item) => item.title === article.meta.section);
     return section?.href ? [`${section.href}/${article.meta.slug}`] : [];
