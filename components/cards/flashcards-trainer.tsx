@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 type FlashcardTerm = {
   title: string;
@@ -32,6 +32,9 @@ export function FlashcardsTrainer({ sections, terms }: FlashcardsTrainerProps) {
   const [sessionTerms, setSessionTerms] = useState<FlashcardTerm[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
+  const [cardHeight, setCardHeight] = useState(420);
+  const frontFaceRef = useRef<HTMLSpanElement | null>(null);
+  const backFaceRef = useRef<HTMLSpanElement | null>(null);
 
   const filteredTerms = useMemo(
     () => terms.filter((term) => selectedSection === "all" || term.section === selectedSection),
@@ -40,6 +43,27 @@ export function FlashcardsTrainer({ sections, terms }: FlashcardsTrainerProps) {
   const maxCount = Math.max(filteredTerms.length, 1);
   const safeCount = Math.min(selectedCount, maxCount);
   const currentTerm = sessionTerms[currentIndex];
+
+  useEffect(() => {
+    if (!currentTerm) return;
+
+    const activeFace = isFlipped ? backFaceRef.current : frontFaceRef.current;
+    if (!activeFace) return;
+
+    const updateHeight = () => {
+      const nextHeight = Math.max(activeFace.scrollHeight + 2, 340);
+      setCardHeight(nextHeight);
+    };
+
+    updateHeight();
+
+    if (typeof ResizeObserver === "undefined") return;
+
+    const observer = new ResizeObserver(() => updateHeight());
+    observer.observe(activeFace);
+
+    return () => observer.disconnect();
+  }, [currentTerm, isFlipped]);
 
   function startSession(count = safeCount) {
     const nextTerms = shuffleTerms(filteredTerms).slice(0, Math.min(count, filteredTerms.length));
@@ -163,13 +187,14 @@ export function FlashcardsTrainer({ sections, terms }: FlashcardsTrainerProps) {
               type="button"
             >
               <span
-                className={`relative block min-h-[340px] rounded-[18px] border border-border bg-background text-left transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] [transform-style:preserve-3d] motion-reduce:transform-none motion-reduce:transition-none group-hover:border-accent sm:min-h-[420px] ${
+                className={`relative block rounded-[18px] border border-border bg-background text-left transition-[height,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] [transform-style:preserve-3d] motion-reduce:transform-none motion-reduce:transition-none group-hover:border-accent ${
                   isFlipped ? "[transform:rotateY(180deg)]" : ""
                 }`}
+                style={{ height: `${cardHeight}px` }}
               >
                 <span className="absolute inset-0 rounded-[18px] shadow-[0_18px_45px_-30px_rgba(59,37,28,0.28)] transition-shadow duration-500 group-hover:shadow-[0_20px_50px_-28px_rgba(219,90,52,0.22)]" />
 
-                <span className="absolute inset-0 flex flex-col justify-center p-7 [backface-visibility:hidden] sm:p-10">
+                <span ref={frontFaceRef} className="absolute inset-0 flex flex-col justify-center p-7 [backface-visibility:hidden] sm:p-10">
                   <span className="editorial-label">{currentTerm.section}</span>
                   <span className="mt-6 block font-serif text-4xl font-bold leading-tight text-primaryDark sm:text-5xl">
                     {currentTerm.title}
@@ -179,7 +204,7 @@ export function FlashcardsTrainer({ sections, terms }: FlashcardsTrainerProps) {
                   </span>
                 </span>
 
-                <span className="absolute inset-0 flex flex-col justify-center p-7 [backface-visibility:hidden] [transform:rotateY(180deg)] sm:p-10">
+                <span ref={backFaceRef} className="absolute inset-0 flex flex-col p-7 [backface-visibility:hidden] [transform:rotateY(180deg)] sm:justify-center sm:p-10">
                   <span className="editorial-label">Ответ</span>
                   <span className="mt-5 block text-xl leading-9 text-primaryDark sm:text-2xl sm:leading-10">
                     {currentTerm.definition}
