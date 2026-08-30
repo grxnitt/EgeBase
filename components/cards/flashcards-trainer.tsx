@@ -196,7 +196,7 @@ export function FlashcardsTrainer({ sections, terms }: FlashcardsTrainerProps) {
 
                 <span ref={frontFaceRef} className="absolute inset-0 flex flex-col justify-center p-7 [backface-visibility:hidden] sm:p-10">
                   <span className="editorial-label">{currentTerm.section}</span>
-                  <span className="mt-6 block font-serif text-4xl font-bold leading-tight text-primaryDark sm:text-5xl">
+                  <span className="mt-6 block font-serif text-[clamp(2.2rem,8vw,4.5rem)] font-bold leading-[0.95] text-primaryDark [overflow-wrap:anywhere] sm:text-5xl sm:leading-tight">
                     {currentTerm.title}
                   </span>
                   <span className="mt-8 text-base font-semibold text-accent transition-opacity duration-300 group-hover:opacity-85">
