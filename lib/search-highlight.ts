@@ -9,7 +9,7 @@ function normalizeForHighlight(value: string) {
 
 function getHighlightNeedles(query: string) {
   const normalizedQuery = normalizeForHighlight(query.trim()).replace(/[^0-9a-zа-я]+/gi, " ");
-  if (!normalizedQuery) {
+  if (normalizedQuery.length < 3) {
     return [];
   }
 
