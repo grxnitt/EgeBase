@@ -13,7 +13,11 @@ export const metadata: Metadata = {
   alternates: { canonical: "/search" }
 };
 
-function HighlightedText({ text, query }: { text: string; query: string }) {
+function HighlightedText({ text, query, enabled = true }: { text: string; query: string; enabled?: boolean }) {
+  if (!enabled) {
+    return <>{text}</>;
+  }
+
   return (
     <>
       {splitHighlightedText(text, query).map((part, index) =>
@@ -64,6 +68,8 @@ export default async function SearchPage({
   const selectedSection = availableSections.some((section) => section.slug === resolvedSearchParams?.section)
     ? resolvedSearchParams?.section
     : undefined;
+  const normalizedQueryLength = query.trim().replace(/\s+/g, " ").length;
+  const isQueryTooShort = normalizedQueryLength > 0 && normalizedQueryLength < 3;
   const results = searchSite(query, selectedSection);
 
   function getFilterHref(sectionSlug?: string) {
@@ -122,7 +128,14 @@ export default async function SearchPage({
             ))}
           </div>
           <div className="mt-8 border-t border-border">
-            {query.trim() ? (
+            {isQueryTooShort ? (
+              <div className="py-12">
+                <h2 className="font-serif text-3xl">Уточните запрос</h2>
+                <p className="mt-3 text-muted">
+                  Введите минимум 3 символа — так поиск не будет подсвечивать случайные буквы в каждом слове.
+                </p>
+              </div>
+            ) : query.trim() ? (
               results.length ? (
                 results.map((topic) =>
                   topic.status === "published" || topic.status === "available" ? (
@@ -136,14 +149,14 @@ export default async function SearchPage({
                           {getResultKindLabel(topic.kind)}
                         </span>
                         <span className="block text-xl font-semibold">
-                          <HighlightedText query={query} text={topic.title} />
+                          <HighlightedText enabled={topic.kind !== "section"} query={query} text={topic.title} />
                         </span>
                         <span className="mt-1 block text-sm text-muted">
-                          <HighlightedText query={query} text={topic.section} />
+                          <HighlightedText enabled={false} query={query} text={topic.section} />
                         </span>
                         {topic.excerpt ? (
                           <span className="mt-3 block max-w-2xl text-sm leading-6 text-muted">
-                            <HighlightedText query={query} text={topic.excerpt} />
+                            <HighlightedText enabled={topic.kind !== "section"} query={query} text={topic.excerpt} />
                           </span>
                         ) : null}
                       </span>
@@ -161,7 +174,7 @@ export default async function SearchPage({
                           <HighlightedText query={query} text={topic.title} />
                         </span>
                         <span className="mt-1 block text-sm text-muted">
-                          <HighlightedText query={query} text={topic.section} />
+                          <HighlightedText enabled={false} query={query} text={topic.section} />
                         </span>
                         {topic.excerpt ? (
                           <span className="mt-3 block max-w-2xl text-sm leading-6 text-muted">
