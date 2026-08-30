@@ -158,22 +158,28 @@ export function FlashcardsTrainer({ sections, terms }: FlashcardsTrainerProps) {
             </div>
 
             <button
-              className="mt-5 flex min-h-[340px] w-full flex-col justify-center rounded-[18px] border border-border bg-background p-7 text-left transition-colors hover:border-accent sm:min-h-[420px] sm:p-10"
+              className="group mt-5 block w-full [perspective:1600px]"
               onClick={() => setIsFlipped((value) => !value)}
               type="button"
             >
-              {!isFlipped ? (
-                <>
+              <span
+                className={`relative block min-h-[340px] rounded-[18px] border border-border bg-background text-left transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] [transform-style:preserve-3d] motion-reduce:transform-none motion-reduce:transition-none group-hover:border-accent sm:min-h-[420px] ${
+                  isFlipped ? "[transform:rotateY(180deg)]" : ""
+                }`}
+              >
+                <span className="absolute inset-0 rounded-[18px] shadow-[0_18px_45px_-30px_rgba(59,37,28,0.28)] transition-shadow duration-500 group-hover:shadow-[0_20px_50px_-28px_rgba(219,90,52,0.22)]" />
+
+                <span className="absolute inset-0 flex flex-col justify-center p-7 [backface-visibility:hidden] sm:p-10">
                   <span className="editorial-label">{currentTerm.section}</span>
                   <span className="mt-6 block font-serif text-4xl font-bold leading-tight text-primaryDark sm:text-5xl">
                     {currentTerm.title}
                   </span>
-                  <span className="mt-8 text-base font-semibold text-accent">
+                  <span className="mt-8 text-base font-semibold text-accent transition-opacity duration-300 group-hover:opacity-85">
                     Нажми, чтобы открыть ответ →
                   </span>
-                </>
-              ) : (
-                <>
+                </span>
+
+                <span className="absolute inset-0 flex flex-col justify-center p-7 [backface-visibility:hidden] [transform:rotateY(180deg)] sm:p-10">
                   <span className="editorial-label">Ответ</span>
                   <span className="mt-5 block text-xl leading-9 text-primaryDark sm:text-2xl sm:leading-10">
                     {currentTerm.definition}
@@ -193,8 +199,8 @@ export function FlashcardsTrainer({ sections, terms }: FlashcardsTrainerProps) {
                       </span>
                     </span>
                   ) : null}
-                </>
-              )}
+                </span>
+              </span>
             </button>
 
             <div className="mt-5 flex items-center justify-between gap-3">
