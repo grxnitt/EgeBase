@@ -97,13 +97,13 @@ function normalizeToken(token: string) {
 
 function getSearchNeedles(query: string) {
   const normalized = normalizeSearchText(query);
-  if (!normalized) {
+  if (normalized.length < 3) {
     return [];
   }
 
   const tokens = normalized.split(" ").filter(Boolean);
   const stems = tokens.map(normalizeToken).filter((token) => token.length >= 3);
-  return [...new Set([normalized, ...stems])];
+  return [...new Set([normalized, ...stems].filter((needle) => needle.length >= 3))];
 }
 
 function matchesValue(value: string, needles: string[]) {
@@ -175,7 +175,6 @@ export function searchSite(query: string, sectionSlug?: string): SiteSearchResul
       const section = theorySections.find((item) => item.title === article.meta.section);
       const haystacks = [
         article.meta.title,
-        article.meta.section,
         article.meta.description,
         stripMdxSyntax(article.body)
       ];
@@ -194,7 +193,7 @@ export function searchSite(query: string, sectionSlug?: string): SiteSearchResul
         status: article.meta.status,
         href: `${section?.href ?? "/theory"}/${article.meta.slug}`,
         order: article.meta.order,
-        excerpt: matchedIndex === 3 ? createSearchExcerpt(article.body, query) : article.meta.description,
+        excerpt: matchedIndex === 2 ? createSearchExcerpt(article.body, query) : article.meta.description,
         score: matchedIndex + 1
       });
 
@@ -207,7 +206,7 @@ export function searchSite(query: string, sectionSlug?: string): SiteSearchResul
     .filter((term) => !sectionSlug || theorySections.find((section) => section.slug === sectionSlug)?.title === term.section)
     .filter((term) =>
       matchesValue(
-        [term.title, term.section, term.definition, ...(term.aliases ?? []), ...(term.features ?? [])].join(" "),
+        [term.title, term.definition, ...(term.aliases ?? []), ...(term.features ?? [])].join(" "),
         needles
       )
     )
