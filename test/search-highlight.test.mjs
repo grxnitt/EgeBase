@@ -16,3 +16,13 @@ test("matches е query against ё in source text", () => {
     { text: "ское движение", highlighted: false }
   ]);
 });
+
+test("does not highlight single-letter queries", () => {
+  assert.deepEqual(splitHighlightedText("Главная", "а"), [{ text: "Главная", highlighted: false }]);
+});
+
+test("does not highlight service words", () => {
+  assert.deepEqual(splitHighlightedText("Человек и общество", "и"), [
+    { text: "Человек и общество", highlighted: false }
+  ]);
+});

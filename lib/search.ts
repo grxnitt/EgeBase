@@ -62,6 +62,52 @@ const COMMON_RUSSIAN_ENDINGS = [
   "о"
 ];
 
+const SEARCH_STOP_WORDS = new Set([
+  "а",
+  "без",
+  "бы",
+  "в",
+  "во",
+  "все",
+  "всех",
+  "вся",
+  "всю",
+  "где",
+  "да",
+  "для",
+  "до",
+  "его",
+  "ее",
+  "если",
+  "же",
+  "за",
+  "и",
+  "из",
+  "или",
+  "их",
+  "к",
+  "как",
+  "ко",
+  "ли",
+  "на",
+  "над",
+  "не",
+  "но",
+  "о",
+  "об",
+  "обо",
+  "от",
+  "по",
+  "под",
+  "при",
+  "с",
+  "со",
+  "то",
+  "у",
+  "что",
+  "это"
+]);
+
 export function normalizeSearchText(value: string) {
   return value
     .toLocaleLowerCase("ru-RU")
@@ -95,15 +141,23 @@ function normalizeToken(token: string) {
   return ending ? normalized.slice(0, -ending.length) : normalized;
 }
 
+function isMeaningfulSearchToken(token: string) {
+  return token.length >= 3 && !SEARCH_STOP_WORDS.has(token);
+}
+
 function getSearchNeedles(query: string) {
   const normalized = normalizeSearchText(query);
   if (normalized.length < 3) {
     return [];
   }
 
-  const tokens = normalized.split(" ").filter(Boolean);
-  const stems = tokens.map(normalizeToken).filter((token) => token.length >= 3);
-  return [...new Set([normalized, ...stems].filter((needle) => needle.length >= 3))];
+  const tokens = normalized.split(" ").filter(isMeaningfulSearchToken);
+  const stems = tokens.map(normalizeToken).filter(isMeaningfulSearchToken);
+  return [...new Set([...tokens, ...stems])];
+}
+
+export function isMeaningfulSearchQuery(query: string) {
+  return getSearchNeedles(query).length > 0;
 }
 
 function matchesValue(value: string, needles: string[]) {
@@ -166,7 +220,7 @@ export function searchSite(query: string, sectionSlug?: string): SiteSearchResul
         href: section.href ?? "/theory",
         order: section.order,
         excerpt: section.description,
-        score: matchesValue(section.title, needles) ? 0 : 2
+        score: matchesValue(section.title, needles) ? 4 : 6
       })
     );
 
