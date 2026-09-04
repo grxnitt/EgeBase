@@ -1,7 +1,6 @@
 "use client";
 
 import { Bookmark, CheckCircle2 } from "lucide-react";
-import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
@@ -78,7 +77,7 @@ function reportSyncIssue(context: string, error: unknown) {
   }
 }
 
-export function ArticleUserActions({ articleSlug, returnTo }: ArticleUserActionsProps) {
+export function ArticleUserActions({ articleSlug }: ArticleUserActionsProps) {
   const [state, setState] = useState<ArticleActionState>(initialState);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isPending, setIsPending] = useState(false);
@@ -302,29 +301,7 @@ export function ArticleUserActions({ articleSlug, returnTo }: ArticleUserActions
   }
 
   if (!isLoaded || !state.isAuthenticated) {
-    return (
-      <aside className="mt-7 rounded-[14px] border border-border bg-surface px-5 py-4">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-5">
-          <p className="text-sm leading-6 text-muted">
-            Войдите, чтобы сохранять материал и отмечать прогресс.
-          </p>
-          <div className="flex shrink-0 flex-wrap items-center gap-3 text-sm font-semibold">
-            <Link
-              className="text-primary underline decoration-border underline-offset-4 transition-colors hover:text-accent hover:decoration-accent"
-              href={`/login?next=${encodeURIComponent(returnTo)}`}
-            >
-              Войти
-            </Link>
-            <Link
-              className="inline-flex h-9 items-center justify-center rounded-smds border border-border bg-background px-4 text-primary transition-colors hover:border-accent hover:bg-subtle hover:text-accent"
-              href={`/register?next=${encodeURIComponent(returnTo)}`}
-            >
-              Регистрация
-            </Link>
-          </div>
-        </div>
-      </aside>
-    );
+    return null;
   }
 
   return (
