@@ -97,22 +97,11 @@ function isResultFilter(value?: string): value is SearchResultFilter {
 }
 
 function getFilterChipClass(isActive: boolean) {
-  return `inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-[border-color,background-color,box-shadow,color] ${
+  return `inline-flex items-center rounded-full border px-4 py-2 text-sm font-semibold transition-[border-color,background-color,box-shadow,color] ${
     isActive
       ? "border-accent bg-accent/16 text-primaryDark shadow-[inset_0_0_0_1px_rgba(211,78,43,0.36)]"
       : "border-border bg-surface text-muted hover:border-accent hover:text-accent"
   }`;
-}
-
-function SelectedFilterMark() {
-  return (
-    <span
-      aria-hidden="true"
-      className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-accent text-[0.62rem] font-bold leading-none text-surface"
-    >
-      ✓
-    </span>
-  );
 }
 
 function SearchResultItem({ query, topic }: { query: string; topic: SiteSearchResult }) {
@@ -250,7 +239,6 @@ export default async function SearchPage({
                   href={getFilterHref({ type: filter.value })}
                   key={filter.value}
                 >
-                  {selectedType === filter.value ? <SelectedFilterMark /> : null}
                   {filter.label}
                   {hasQuery ? <span className="ml-2 opacity-70">{resultCounts[filter.value]}</span> : null}
                 </Link>
@@ -263,7 +251,6 @@ export default async function SearchPage({
               className={getFilterChipClass(!selectedSection)}
               href={getFilterHref({ sectionSlug: null })}
             >
-              {!selectedSection ? <SelectedFilterMark /> : null}
               Все разделы
             </Link>
             {availableSections.map((section) => (
@@ -272,7 +259,6 @@ export default async function SearchPage({
                 href={getFilterHref({ sectionSlug: section.slug })}
                 key={section.slug}
               >
-                {selectedSection === section.slug ? <SelectedFilterMark /> : null}
                 {section.title}
               </Link>
             ))}
