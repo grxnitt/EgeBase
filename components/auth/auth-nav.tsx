@@ -42,11 +42,5 @@ export function AuthNav() {
     );
   }
 
-  return (
-    <div className="flex items-center gap-3 text-sm font-semibold">
-      <Link className="text-text transition-colors hover:text-accent" href="/login">
-        Войти
-      </Link>
-    </div>
-  );
+  return null;
 }
