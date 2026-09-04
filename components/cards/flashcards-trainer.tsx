@@ -26,8 +26,19 @@ function shuffleTerms(terms: FlashcardTerm[]) {
   return shuffled;
 }
 
-const activeChipClass = "border-accent/55 bg-accent/12 text-accent";
+const activeChipClass = "border-accent bg-accent/16 text-primaryDark shadow-[inset_0_0_0_1px_rgba(211,78,43,0.36)]";
 const inactiveChipClass = "border-border bg-background text-primary hover:border-accent hover:bg-subtle";
+
+function SelectedChipMark() {
+  return (
+    <span
+      aria-hidden="true"
+      className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-accent text-[0.62rem] font-bold leading-none text-surface"
+    >
+      ✓
+    </span>
+  );
+}
 
 export function FlashcardsTrainer({ sections, terms }: FlashcardsTrainerProps) {
   const [selectedSection, setSelectedSection] = useState("all");
@@ -103,23 +114,25 @@ export function FlashcardsTrainer({ sections, terms }: FlashcardsTrainerProps) {
           <p className="text-sm font-bold uppercase tracking-[0.08em] text-primaryDark">Раздел</p>
           <div className="mt-3 flex flex-wrap gap-2">
             <button
-              className={`rounded-smds border px-4 py-2 text-sm font-semibold transition-colors ${
+              className={`inline-flex items-center gap-2 rounded-smds border px-4 py-2 text-sm font-semibold transition-[border-color,background-color,box-shadow,color] ${
                 selectedSection === "all" ? activeChipClass : inactiveChipClass
               }`}
               onClick={() => selectSection("all")}
               type="button"
             >
+              {selectedSection === "all" ? <SelectedChipMark /> : null}
               Все термины <span className="ml-1 opacity-70">{terms.length}</span>
             </button>
             {sections.map((section) => (
               <button
-                className={`rounded-smds border px-4 py-2 text-sm font-semibold transition-colors ${
+                className={`inline-flex items-center gap-2 rounded-smds border px-4 py-2 text-sm font-semibold transition-[border-color,background-color,box-shadow,color] ${
                   selectedSection === section.section ? activeChipClass : inactiveChipClass
                 }`}
                 key={section.section}
                 onClick={() => selectSection(section.section)}
                 type="button"
               >
+                {selectedSection === section.section ? <SelectedChipMark /> : null}
                 {section.section} <span className="ml-1 opacity-70">{section.count}</span>
               </button>
             ))}
@@ -131,13 +144,14 @@ export function FlashcardsTrainer({ sections, terms }: FlashcardsTrainerProps) {
           <div className="mt-3 flex flex-wrap gap-2">
             {countOptions.map((count) => (
               <button
-                className={`h-10 min-w-12 rounded-smds border px-3 text-sm font-bold transition-colors ${
+                className={`inline-flex h-10 min-w-12 items-center justify-center gap-2 rounded-smds border px-3 text-sm font-bold transition-[border-color,background-color,box-shadow,color] ${
                   safeCount === count ? activeChipClass : inactiveChipClass
                 }`}
                 key={count}
                 onClick={() => setSelectedCount(count)}
                 type="button"
               >
+                {safeCount === count ? <SelectedChipMark /> : null}
                 {count}
               </button>
             ))}
