@@ -23,15 +23,15 @@ export default function CardsPage() {
   }));
 
   return (
-    <div className="container-shell py-8 md:py-12">
+    <div className="container-shell py-5 md:py-8">
       <Breadcrumbs items={[{ label: "Главная", href: "/" }, { label: "Карточки" }]} />
 
-      <section className="py-10 md:py-16">
+      <section className="py-6 md:py-8 lg:py-10">
         <p className="editorial-label">Повторение</p>
-        <h1 className="mt-5 max-w-4xl font-serif text-5xl leading-[0.96] sm:text-6xl lg:text-7xl">
+        <h1 className="mt-4 max-w-4xl font-serif text-5xl leading-[0.96] sm:text-6xl lg:text-7xl">
           Карточки по словарю<span className="text-accent">.</span>
         </h1>
-        <p className="mt-6 max-w-2xl text-base leading-7 text-muted sm:text-lg sm:leading-8">
+        <p className="mt-4 max-w-2xl text-base leading-7 text-muted sm:text-lg sm:leading-8">
           Собери короткую тренировку: выбери раздел, количество понятий и проверяй себя по определениям и признакам.
         </p>
       </section>

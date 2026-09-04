@@ -26,6 +26,9 @@ function shuffleTerms(terms: FlashcardTerm[]) {
   return shuffled;
 }
 
+const activeChipClass = "border-accent/55 bg-accent/12 text-accent";
+const inactiveChipClass = "border-border bg-background text-primary hover:border-accent hover:bg-subtle";
+
 export function FlashcardsTrainer({ sections, terms }: FlashcardsTrainerProps) {
   const [selectedSection, setSelectedSection] = useState("all");
   const [selectedCount, setSelectedCount] = useState(10);
@@ -101,9 +104,7 @@ export function FlashcardsTrainer({ sections, terms }: FlashcardsTrainerProps) {
           <div className="mt-3 flex flex-wrap gap-2">
             <button
               className={`rounded-smds border px-4 py-2 text-sm font-semibold transition-colors ${
-                selectedSection === "all"
-                  ? "border-accent bg-accent text-accent-foreground"
-                  : "border-border bg-background text-primary hover:border-accent hover:bg-subtle"
+                selectedSection === "all" ? activeChipClass : inactiveChipClass
               }`}
               onClick={() => selectSection("all")}
               type="button"
@@ -113,9 +114,7 @@ export function FlashcardsTrainer({ sections, terms }: FlashcardsTrainerProps) {
             {sections.map((section) => (
               <button
                 className={`rounded-smds border px-4 py-2 text-sm font-semibold transition-colors ${
-                  selectedSection === section.section
-                    ? "border-accent bg-accent text-accent-foreground"
-                    : "border-border bg-background text-primary hover:border-accent hover:bg-subtle"
+                  selectedSection === section.section ? activeChipClass : inactiveChipClass
                 }`}
                 key={section.section}
                 onClick={() => selectSection(section.section)}
@@ -133,9 +132,7 @@ export function FlashcardsTrainer({ sections, terms }: FlashcardsTrainerProps) {
             {countOptions.map((count) => (
               <button
                 className={`h-10 min-w-12 rounded-smds border px-3 text-sm font-bold transition-colors ${
-                  safeCount === count
-                    ? "border-accent bg-accent text-accent-foreground"
-                    : "border-border bg-background text-primary hover:border-accent hover:bg-subtle"
+                  safeCount === count ? activeChipClass : inactiveChipClass
                 }`}
                 key={count}
                 onClick={() => setSelectedCount(count)}

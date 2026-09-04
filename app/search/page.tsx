@@ -99,7 +99,7 @@ function isResultFilter(value?: string): value is SearchResultFilter {
 function getFilterChipClass(isActive: boolean) {
   return `rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${
     isActive
-      ? "border-accent bg-accent text-accent-foreground"
+      ? "border-accent/55 bg-accent/12 text-accent"
       : "border-border bg-surface text-muted hover:border-accent hover:text-accent"
   }`;
 }
