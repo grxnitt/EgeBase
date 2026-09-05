@@ -26,7 +26,7 @@ export function DictionaryReturnLink() {
 
   return (
     <Link
-      className="mb-5 inline-flex items-center rounded-smds border border-border bg-surface px-4 py-2 text-sm font-semibold text-primary transition-colors hover:border-accent hover:bg-subtle hover:text-accent"
+      className="mb-4 mt-3 inline-flex items-center text-sm font-semibold text-primary/80 underline decoration-border underline-offset-4 transition-colors hover:text-accent hover:decoration-accent"
       href={href}
       onClick={handleClick}
     >
