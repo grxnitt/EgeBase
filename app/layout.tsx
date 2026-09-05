@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Onest } from "next/font/google";
 import "./globals.css";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
+import { ReadingPositionRestorer } from "@/components/navigation/reading-position-restorer";
 import { siteConfig } from "@/config/site";
 
 const egebaseTypeface = Onest({
@@ -39,6 +41,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ru" className={egebaseTypeface.variable}>
       <body>
+        <Suspense fallback={null}>
+          <ReadingPositionRestorer />
+        </Suspense>
         <Header />
         <main>{children}</main>
         <Footer />

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
+import { DictionaryReturnLink } from "@/components/dictionary/dictionary-return-link";
 import { Breadcrumbs } from "@/components/navigation/breadcrumbs";
 import {
   getDictionarySections,
@@ -73,6 +75,9 @@ export default async function DictionaryTermPage({ params }: PageProps) {
           { label: term.title }
         ]}
       />
+      <Suspense fallback={null}>
+        <DictionaryReturnLink />
+      </Suspense>
       <article className="grid gap-10 py-10 lg:grid-cols-[0.95fr_1.05fr] lg:gap-16 lg:py-16">
         <div className="min-w-0">
           <p className="editorial-label">{term.section}</p>

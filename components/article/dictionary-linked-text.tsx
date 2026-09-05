@@ -1,7 +1,7 @@
-import Link from "next/link";
 import { Children, isValidElement, type ReactNode } from "react";
-import { dictionaryTerms, getDictionaryTermHref } from "@/lib/dictionary";
+import { dictionaryTerms } from "@/lib/dictionary";
 import { splitDictionaryTermText } from "@/lib/dictionary-linking";
+import { DictionaryTermLink } from "./dictionary-term-link";
 
 type DictionaryLinkedTextProps = {
   children: ReactNode;
@@ -20,9 +20,9 @@ function renderDictionaryLinkedNode(node: ReactNode, linkedTermSlugs: Set<string
       linkedTermSlugs.add(part.slug);
 
       return (
-        <Link className="dictionary-term-link" href={getDictionaryTermHref(part.slug)} key={`${part.slug}-${index}`}>
+        <DictionaryTermLink slug={part.slug} key={`${part.slug}-${index}`}>
           {part.text}
-        </Link>
+        </DictionaryTermLink>
       );
     });
   }
